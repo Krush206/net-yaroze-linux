@@ -1,0 +1,50 @@
+*asm:
+%{mmips-as: 	%{!.s:-nocpp} %{.s: %{cpp} %{nocpp}} 	%{pipe: %e-pipe is not supported.} 	%{K}} %{!mmips-as: 	%{mcpu=*} %{m4650} %{mmad:-m4650}} %{G*} %{EB} %{EL} %{mips1} %{mips2} %{mips3} %{mips4} %{v} %{noasmopt:-O0} %{!noasmopt:%{O:-O2} %{O1:-O2} %{O2:-O2} %{O3:-O3}} %{g} %{g0} %{g1} %{g2} %{g3} %{ggdb:-g} %{ggdb0:-g0} %{ggdb1:-g1} %{ggdb2:-g2} %{ggdb3:-g3} %{gstabs:-g} %{gstabs0:-g0} %{gstabs1:-g1} %{gstabs2:-g2} %{gstabs3:-g3} %{gstabs+:-g} %{gstabs+0:-g0} %{gstabs+1:-g1} %{gstabs+2:-g2} %{gstabs+3:-g3} %{gcoff:-g} %{gcoff0:-g0} %{gcoff1:-g1} %{gcoff2:-g2} %{gcoff3:-g3} %{membedded-pic}
+
+*asm_final:
+%{mmips-as: %{!mno-mips-tfile: 	
+ mips-tfile %{v*: -v} 		%{K: -I %b.o~} 		%{!K: %{save-temps: -I %b.o~}} 		%{c:%W{o*}%{!o*:-o %b.o}}%{!c:-o %U.o} 		%{.s:%i} %{!.s:%g.s}}}
+
+*cpp:
+%{.cc:	-D__LANGUAGE_C_PLUS_PLUS -D_LANGUAGE_C_PLUS_PLUS} %{.cxx:	-D__LANGUAGE_C_PLUS_PLUS -D_LANGUAGE_C_PLUS_PLUS} %{.C:	-D__LANGUAGE_C_PLUS_PLUS -D_LANGUAGE_C_PLUS_PLUS} %{.m:	-D__LANGUAGE_OBJECTIVE_C -D_LANGUAGE_OBJECTIVE_C} %{.S:	-D__LANGUAGE_ASSEMBLY -D_LANGUAGE_ASSEMBLY %{!ansi:-DLANGUAGE_ASSEMBLY}} %{.s:	-D__LANGUAGE_ASSEMBLY -D_LANGUAGE_ASSEMBLY %{!ansi:-DLANGUAGE_ASSEMBLY}} %{!.S:%{!.s:	-D__LANGUAGE_C -D_LANGUAGE_C %{!ansi:-DLANGUAGE_C}}} %{mlong64:-D__SIZE_TYPE__=long\ unsigned\ int -D__PTRDIFF_TYPE__=long\ int} %{!mlong64:-D__SIZE_TYPE__=unsigned\ int -D__PTRDIFF_TYPE__=int} %{mips3:-U__mips -D__mips=3 -D__mips64} %{mips4:-U__mips -D__mips=4 -D__mips64} %{mgp32:-U__mips64} %{mgp64:-D__mips64} %{EB:-UMIPSEL -U_MIPSEL -U__MIPSEL -U__MIPSEL__ -D_MIPSEB -D__MIPSEB -D__MIPSEB__ %{!ansi:-DMIPSEB}} %{EL:-UMIPSEB -U_MIPSEB -U__MIPSEB -U__MIPSEB__ -D_MIPSEL -D__MIPSEL -D__MIPSEL__ %{!ansi:-DMIPSEL}}
+
+*cc1:
+%{gline:%{!g:%{!g0:%{!g1:%{!g2: -g1}}}}} %{mips1:-mfp32 -mgp32}%{mips2:-mfp32 -mgp32}%{mips3:%{!msingle-float:%{!m4650:-mfp64}} -mgp64} %{mips4:%{!msingle-float:%{!m4650:-mfp64}} -mgp64} %{mfp64:%{msingle-float:%emay not use both -mfp64 and -msingle-float}} %{mfp64:%{m4650:%emay not use both -mfp64 and -m4650}} %{m4650:-mcpu=r4650} %{G*} %{EB:-meb} %{EL:-mel} %{EB:%{EL:%emay not use both -EB and -EL}} %{pic-none:   -mno-half-pic} %{pic-lib:    -mhalf-pic} %{pic-extern: -mhalf-pic} %{pic-calls:  -mhalf-pic} %{save-temps: }
+
+*cc1plus:
+
+
+*endfile:
+
+
+*link:
+%{G*} %{EB} %{EL} %{mips1} %{mips2} %{mips3} %{mips4} %{bestGnum} %{shared} %{non_shared}
+
+*lib:
+#%{p:-lprof1} %{pg:-lprof1} -lc
+-lps
+
+*libgcc:
+#%{!shared:-lgcc}
+%{!shared:}
+
+*startfile:
+#%{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}
+libps.a%s
+
+*switches_need_spaces:
+
+
+*signed_char:
+%{funsigned-char:-D__CHAR_UNSIGNED__}
+
+*predefines:
+	-Dunix -Dmips -DMIPSEL -Dpsx 	-Asystem(unix) -Asystem(bsd) -Acpu(mips) -Amachine(mips)
+
+*cross_compile:
+1
+
+*multilib:
+. ;
+
+
