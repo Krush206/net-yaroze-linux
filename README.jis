@@ -1,0 +1,55 @@
+[hssutils-0.1.1]
+
+UN*X用 HSS ライブラリとそれを用いたツールです。まだマニュアルはありま
+せん。install は INSTALL.jis を御覧ください。
+
+
+o hss/		HSS プロトコルのライブラリ
+
+o psxxfer/	バイナリ転送 psxfer 
+  ECOFF のプログラムのダウンロードとバイナリデータ転送(読み書き)ができ
+  ます。
+
+マニュアルはできていないので psxfer の説明は後述します。
+
+
+[psxfer]
+option は load.exe, dload.exe, dsave.exe に合わせてあります。
+
+0. デバイス/通信速度/スタックポインタ設定
+
+-p <devfile>	(例: -p /dev/cuaa0)
+-B <bps>	(例: -B 115200)
+-S <sp>		(例: -S 801fff00)
+
+で指定します。デバイス/通信速度に関してはコンパイル時にdefault値を設定
+できます。
+
+1. バイナリファイルをPSへ書く	dload.exe 互換
+
+psxfer -n<filename> -a<address hex>
+あるいは
+psxfer -a<address hex> [file...]
+です。 file を指定しないと標準入力からの読み込みます。
+
+2. バイナリデータをPSから読む	dsave.exe 互換
+
+psxfer -n<filename> -a<address hex> -s<size hex>
+あるいは
+psxfer -a<address hex> -s<size hex> [outfile]
+です。 file を指定しないと標準出力へ出力します。
+
+3. プログラムをPSへ転送		load.exe 互換
+
+psxfer [-g] -n<filename>
+あるいは
+psxfer [-g] [outfile]
+です。 file を指定しないと標準出力へ出力します。
+-g を付加すると転送後に実行します。
+
+4. プログラム実行		go.exe 互換
+
+psxfer -g
+
+--
+本橋 motohash@ca2.so-net.or.jp

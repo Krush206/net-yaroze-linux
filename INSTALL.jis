@@ -1,0 +1,15 @@
+1. configure
+
+% ./configure 
+
+defaultのデバイスを --enable-siodev=DEVFILE にて
+defaultの通信速度を --enable-siospeed=BPS にて指定できます.
+指定しないと デバイス /dev/cuaa0 通信速度 115200 (bps) になります.
+
+2. compile
+
+% make
+
+3. install
+
+% make install

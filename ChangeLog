@@ -1,0 +1,15 @@
+Mon Aug 12 05:34:35 1996  Jun MOTOHASHI  <motohash@ca2.so-net.or.jp>
+
+	* configure.in: Version 0.1.2:
+	シリアルの設定が反映されるように修正.
+
+	* hss/Makefile.am: CPPFLAGSの指定に不備があったので修正.
+
+	* psxfer/Makefile.am: シリアルデバイスと通信速度の設定を反映させて
+        いなかったので修正. CPPFLAGSの指定に不備があったので修正.
+
+Mon Aug 12 00:05:08 1996  Jun MOTOHASHI  <motohash@ca2.so-net.or.jp>
+
+	* configure.in: Version 0.1.1:
+	hss/hss.c: hss_ushort_swap(), hss_uint_swap() bugfix.
+
