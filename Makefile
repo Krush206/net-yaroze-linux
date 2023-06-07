@@ -2853,7 +2853,10 @@ maintainer-clean:
 # The semicolon is to prevent the install.sh -> install default rule
 # from doing anything.  Having it run true helps avoid problems and
 # noise from versions of make which don't like to have null commands.
-install: $(INSTALL_TARGET) ; @true
+install:
+	@echo Do not run \'make install\'.
+	@echo Install by running \'install -Dm755 xgcc /usr/local/bin/psx-gcc\'.
+	@exit
 
 # Copy the compiler files into directories where they will be run.
 # Install the driver last so that the window when things are
