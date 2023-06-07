@@ -1299,19 +1299,17 @@ static char *gcc_exec_prefix;
 #undef MD_STARTFILE_PREFIX_1
 #endif
 
-#ifndef STANDARD_EXEC_PREFIX
-#define STANDARD_EXEC_PREFIX "/usr/local/lib/gcc-lib/"
-#endif /* !defined STANDARD_EXEC_PREFIX */
+#undef STANDARD_EXEC_PREFIX
+#define STANDARD_EXEC_PREFIX "/usr/local/psx/lib/gcc/"
 
 static char *standard_exec_prefix = STANDARD_EXEC_PREFIX;
-static char *standard_exec_prefix_1 = "/usr/lib/gcc/";
+static char *standard_exec_prefix_1 = STANDARD_EXEC_PREFIX;
 #ifdef MD_EXEC_PREFIX
 static char *md_exec_prefix = MD_EXEC_PREFIX;
 #endif
 
-#ifndef STANDARD_STARTFILE_PREFIX
-#define STANDARD_STARTFILE_PREFIX "/usr/local/lib/"
-#endif /* !defined STANDARD_STARTFILE_PREFIX */
+#undef STANDARD_STARTFILE_PREFIX
+#define STANDARD_STARTFILE_PREFIX "/usr/local/psx/lib/"
 
 #ifdef MD_STARTFILE_PREFIX
 static char *md_startfile_prefix = MD_STARTFILE_PREFIX;
@@ -1320,12 +1318,11 @@ static char *md_startfile_prefix = MD_STARTFILE_PREFIX;
 static char *md_startfile_prefix_1 = MD_STARTFILE_PREFIX_1;
 #endif
 static char *standard_startfile_prefix = STANDARD_STARTFILE_PREFIX;
-static char *standard_startfile_prefix_1 = "/lib/";
-static char *standard_startfile_prefix_2 = "/usr/lib/";
+static char *standard_startfile_prefix_1 = STANDARD_STARTFILE_PREFIX;
+static char *standard_startfile_prefix_2 = STANDARD_STARTFILE_PREFIX;
 
-#ifndef TOOLDIR_BASE_PREFIX
-#define TOOLDIR_BASE_PREFIX "/usr/local/"
-#endif
+#undef TOOLDIR_BASE_PREFIX
+#define TOOLDIR_BASE_PREFIX "/usr/local/psx/"
 static char *tooldir_base_prefix = TOOLDIR_BASE_PREFIX;
 static char *tooldir_prefix;
 
@@ -1818,11 +1815,7 @@ static char *
 build_search_list (paths, prefix, check_dir_p)
      struct path_prefix *paths;
      char *prefix;
-     int check_dir_p;
 {
-  int suffix_len = (machine_suffix) ? strlen (machine_suffix) : 0;
-  int just_suffix_len
-    = (just_machine_suffix) ? strlen (just_machine_suffix) : 0;
   int first_time = TRUE;
   struct prefix_list *pprefix;
 
@@ -1832,40 +1825,11 @@ build_search_list (paths, prefix, check_dir_p)
     {
       int len = strlen (pprefix->prefix);
 
-      if (machine_suffix
-	  && (! check_dir_p
-	      || is_directory (pprefix->prefix, machine_suffix, 0)))
-	{
-	  if (!first_time)
-	    obstack_1grow (&collect_obstack, PATH_SEPARATOR);
-	    
-	  first_time = FALSE;
-	  obstack_grow (&collect_obstack, pprefix->prefix, len);
-	  obstack_grow (&collect_obstack, machine_suffix, suffix_len);
-	}
+      if (! first_time)
+	obstack_1grow (&collect_obstack, PATH_SEPARATOR);
 
-      if (just_machine_suffix
-	  && pprefix->require_machine_suffix == 2
-	  && (! check_dir_p
-	      || is_directory (pprefix->prefix, just_machine_suffix, 0)))
-	{
-	  if (! first_time)
-	    obstack_1grow (&collect_obstack, PATH_SEPARATOR);
-	    
-	  first_time = FALSE;
-	  obstack_grow (&collect_obstack, pprefix->prefix, len);
-	  obstack_grow (&collect_obstack, just_machine_suffix,
-			just_suffix_len);
-	}
-
-      if (! pprefix->require_machine_suffix)
-	{
-	  if (! first_time)
-	    obstack_1grow (&collect_obstack, PATH_SEPARATOR);
-
-	  first_time = FALSE;
-	  obstack_grow (&collect_obstack, pprefix->prefix, len);
-	}
+      first_time = FALSE;
+      obstack_grow (&collect_obstack, pprefix->prefix, len);
     }
 
   obstack_1grow (&collect_obstack, '\0');
@@ -1919,95 +1883,27 @@ find_a_file (pprefix, name, mode)
   else
     for (pl = pprefix->plist; pl; pl = pl->next)
       {
-	if (machine_suffix)
+	if (file_suffix[0] != 0)
 	  {
-	    /* Some systems have a suffix for executable files.
-	       So try appending that first.  */
-	    if (file_suffix[0] != 0)
-	      {
-		strcpy (temp, pl->prefix);
-		strcat (temp, machine_suffix);
-		strcat (temp, name);
-		strcat (temp, file_suffix);
-		if (access (temp, mode) == 0)
-		  {
-		    if (pl->used_flag_ptr != 0)
-		      *pl->used_flag_ptr = 1;
-		    return temp;
-		  }
-	      }
-
-	    /* Now try just the name.  */
 	    strcpy (temp, pl->prefix);
-	    strcat (temp, machine_suffix);
 	    strcat (temp, name);
+	    strcat (temp, file_suffix);
 	    if (access (temp, mode) == 0)
 	      {
-		if (pl->used_flag_ptr != 0)
-		  *pl->used_flag_ptr = 1;
-		return temp;
+	        if (pl->used_flag_ptr != 0)
+	          *pl->used_flag_ptr = 1;
+	        return temp;
 	      }
 	  }
 
-	/* Certain prefixes are tried with just the machine type,
-	   not the version.  This is used for finding as, ld, etc.  */
-	if (just_machine_suffix && pl->require_machine_suffix == 2)
-	  {
-	    /* Some systems have a suffix for executable files.
-	       So try appending that first.  */
-	    if (file_suffix[0] != 0)
-	      {
-		strcpy (temp, pl->prefix);
-		strcat (temp, just_machine_suffix);
-		strcat (temp, name);
-		strcat (temp, file_suffix);
-		if (access (temp, mode) == 0)
-		  {
-		    if (pl->used_flag_ptr != 0)
-		      *pl->used_flag_ptr = 1;
-		    return temp;
-		  }
-	      }
-
-	    strcpy (temp, pl->prefix);
-	    strcat (temp, just_machine_suffix);
-	    strcat (temp, name);
-	    if (access (temp, mode) == 0)
-	      {
-		if (pl->used_flag_ptr != 0)
-		  *pl->used_flag_ptr = 1;
-		return temp;
-	      }
-	  }
-
-	/* Certain prefixes can't be used without the machine suffix
-	   when the machine or version is explicitly specified.  */
-	if (! pl->require_machine_suffix)
-	  {
-	    /* Some systems have a suffix for executable files.
-	       So try appending that first.  */
-	    if (file_suffix[0] != 0)
-	      {
-		strcpy (temp, pl->prefix);
-		strcat (temp, name);
-		strcat (temp, file_suffix);
-		if (access (temp, mode) == 0)
-		  {
-		    if (pl->used_flag_ptr != 0)
-		      *pl->used_flag_ptr = 1;
-		    return temp;
-		  }
-	      }
-
-	    strcpy (temp, pl->prefix);
-	    strcat (temp, name);
-	    if (access (temp, mode) == 0)
-	      {
-		if (pl->used_flag_ptr != 0)
-		  *pl->used_flag_ptr = 1;
-		return temp;
-	      }
-	  }
+	  strcpy (temp, pl->prefix);
+	  strcat (temp, name);
+	  if (access (temp, mode) == 0)
+	    {
+	      if (pl->used_flag_ptr != 0)
+	        *pl->used_flag_ptr = 1;
+	      return temp;
+	    }
       }
 
   free (temp);
@@ -2807,7 +2703,7 @@ process_command (argc, argv)
   add_prefix (&startfile_prefixes, standard_exec_prefix_1, "BINUTILS",
 	      0, 1, warn_std_ptr);
 
-  tooldir_prefix = concat (tooldir_base_prefix, spec_machine, 
+  tooldir_prefix = concat (tooldir_base_prefix,
 			   dir_separator_str, NULL_PTR);
 
   /* If tooldir is relative, base it on exec_prefixes.  A relative
@@ -2846,6 +2742,10 @@ process_command (argc, argv)
   add_prefix (&startfile_prefixes,
 	      concat (tooldir_prefix, "lib", dir_separator_str, NULL_PTR),
 	      "BINUTILS", 0, 0, NULL_PTR);
+
+  add_prefix (&include_prefixes,
+	      concat (tooldir_base_prefix, dir_separator_str, "include",
+			 NULL_PTR), NULL_PTR, 0, 0, NULL_PTR);
 
   /* More prefixes are enabled in main, after we read the specs file
      and determine whether this is cross-compilation or not.  */
@@ -4427,12 +4327,6 @@ main (argc, argv)
 	 sizeof default_compilers);
   n_compilers = n_default_compilers;
 
-  /* Read specs from a file if there is one.  */
-
-  machine_suffix = concat (spec_machine, dir_separator_str,
-			   spec_version, dir_separator_str, NULL_PTR);
-  just_machine_suffix = concat (spec_machine, dir_separator_str, NULL_PTR);
-
   specs_file = find_a_file (&startfile_prefixes, "specs", R_OK);
   /* Read the specs file unless it is a default one.  */
   if (specs_file != 0 && strcmp (specs_file, "specs"))
@@ -4443,11 +4337,9 @@ main (argc, argv)
   /* We need to check standard_exec_prefix/just_machine_suffix/specs
      for any override of as, ld and libraries. */
   specs_file = (char *) alloca (strlen (standard_exec_prefix)
-				+ strlen (just_machine_suffix)
 				+ sizeof ("specs"));
 
   strcpy (specs_file, standard_exec_prefix);
-  strcat (specs_file, just_machine_suffix);
   strcat (specs_file, "specs");
   if (access (specs_file, R_OK) == 0)
     read_specs (specs_file, TRUE);

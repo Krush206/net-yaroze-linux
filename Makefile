@@ -1478,13 +1478,6 @@ xgcc: gcc.o version.o choose-temp.o pexecute.o prefix.o version.o \
 	$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o $@ gcc.o prefix.o version.o \
 	  choose-temp.o pexecute.o $(EXTRA_GCC_OBJS) $(LIBS)
 
-	@ln -fs /usr/local/psx/bin/as as
-	@ln -fs /usr/local/psx/bin/ar ar
-	@ln -fs /usr/local/psx/bin/ld ld
-	@ln -fs /usr/local/psx/bin/strip strip
-	@ln -fs /usr/local/psx/bin/ranlib ranlib
-	@ln -fs /usr/local/psx/bin/nm nm
-
 # Dump a specs file to make -B./ read these specs over installed ones.
 specs: xgcc
 	$(GCC_FOR_TARGET) -dumpspecs > tmp-specs
