@@ -216,13 +216,13 @@ prefix = /usr
 # NOTE: local_prefix *should not* default from prefix.
 local_prefix = /usr/local
 # Directory in which to put host dependent programs and libraries
-exec_prefix = ${prefix}
+exec_prefix = ${local_prefix}/psx
 # Directory in which to put the executable for the command `gcc'
 bindir = ${exec_prefix}/bin
 # Directory in which to put the directories used by the compiler.
 libdir = ${exec_prefix}/lib
 # Directory in which the compiler finds executables, libraries, etc.
-libsubdir = $(libdir)/gcc-lib/$(target_alias)/$(version)
+libsubdir = $(libdir)/gcc
 # Directory in which the compiler finds g++ includes.
 gxx_include_dir= ${prefix}/include/g++
 # Directory in which the old g++ header files may be found.
@@ -243,7 +243,7 @@ exeext =
 mandir = ${prefix}/man/man1
 # Directory in which to find other cross-compilation tools and headers.
 # Used in install-cross.
-tooldir = $(exec_prefix)/$(target_alias)
+tooldir = $(exec_prefix)
 # Dir for temp files.
 tmpdir = /tmp
 
@@ -1953,7 +1953,7 @@ c-common.o : c-common.c $(CONFIG_H) $(TREE_H) c-tree.h c-lex.h flags.h
 
 DRIVER_DEFINES = \
   -DSTANDARD_STARTFILE_PREFIX=\"$(libdir)/\" \
-  -DSTANDARD_EXEC_PREFIX=\"$(libdir)/gcc-lib/\" \
+  -DSTANDARD_EXEC_PREFIX=\"$(libdir)/gcc/\" \
   -DDEFAULT_TARGET_VERSION=\"$(version)\" \
   -DDEFAULT_TARGET_MACHINE=\"$(target_alias)\" \
   -DTOOLDIR_BASE_PREFIX=\"$(exec_prefix)/\"
@@ -2853,10 +2853,7 @@ maintainer-clean:
 # The semicolon is to prevent the install.sh -> install default rule
 # from doing anything.  Having it run true helps avoid problems and
 # noise from versions of make which don't like to have null commands.
-install:
-	@echo Do not run \'make install\'.
-	@echo Install by running \'install -Dm755 xgcc /usr/local/bin/psx-gcc\'.
-	@exit
+install: $(INSTALL_TARGET) ; @true
 
 # Copy the compiler files into directories where they will be run.
 # Install the driver last so that the window when things are
@@ -2890,12 +2887,10 @@ installdirs:
 	-if [ -d $(prefix) ] ; then true ; else mkdir $(prefix) ; chmod a+rx $(prefix) ; fi
 	-if [ -d $(exec_prefix) ] ; then true ; else mkdir $(exec_prefix) ; chmod a+rx $(exec_prefix) ; fi
 	-if [ -d $(libdir) ] ; then true ; else mkdir $(libdir) ; chmod a+rx $(libdir) ; fi
-	-if [ -d $(libdir)/gcc-lib ] ; then true ; else mkdir $(libdir)/gcc-lib ; chmod a+rx $(libdir)/gcc-lib ; fi
+	-if [ -d $(libdir)/gcc ] ; then true ; else mkdir $(libdir)/gcc ; chmod a+rx $(libdir)/gcc ; fi
 # This dir isn't currently searched by cpp.
-#	-if [ -d $(libdir)/gcc-lib/include ] ; then true ; else mkdir $(libdir)/gcc-lib/include ; chmod a+rx $(libdir)/gcc-lib/include ; fi
-	-if [ -d $(libdir)/gcc-lib/$(target_alias) ] ; then true ; else mkdir $(libdir)/gcc-lib/$(target_alias) ; chmod a+rx $(libdir)/gcc-lib/$(target_alias) ; fi
-	-if [ -d $(libdir)/gcc-lib/$(target_alias)/$(version) ] ; then true ; else mkdir $(libdir)/gcc-lib/$(target_alias)/$(version) ; chmod a+rx $(libdir)/gcc-lib/$(target_alias)/$(version) ; fi
-	-if [ -d $(libdir)/gcc-lib/$(target_alias)/$(version)/include ] ; then true ; else mkdir $(libdir)/gcc-lib/$(target_alias)/$(version)/include ; chmod a+rx $(libdir)/gcc-lib/$(target_alias)/$(version)/include ; fi
+#	-if [ -d $(libdir)/gcc/include ] ; then true ; else mkdir $(libdir)/gcc/include ; chmod a+rx $(libdir)/gcc/include ; fi
+	-if [ -d $(libdir)/gcc ] ; then true ; else mkdir $(libdir)/gcc ; chmod a+rx $(libdir)/gcc ; fi
 	-if [ -d $(bindir) ] ; then true ; else mkdir $(bindir) ; chmod a+rx $(bindir) ; fi
 	-if [ -d $(includedir) ] ; then true ; else mkdir $(includedir) ; chmod a+rx $(includedir) ; fi
 	-if [ -d $(tooldir) ] ; then true ; else mkdir $(tooldir) ; chmod a+rx $(tooldir) ; fi
@@ -2960,22 +2955,8 @@ install-common: native installdirs $(EXTRA_PARTS) lang.install-common
 # Install the driver program as $(target_alias)-gcc
 # and also as either gcc (if native) or $(tooldir)/bin/gcc.
 install-driver: xgcc
-	-if [ -f gcc-cross$(exeext) ] ; then \
-	  rm -f $(bindir)/$(GCC_CROSS_NAME)$(exeext); \
-	  $(INSTALL_PROGRAM) gcc-cross$(exeext) $(bindir)/$(GCC_CROSS_NAME)$(exeext); \
-	  if [ -d $(tooldir)/bin/. ] ; then \
-	    rm -f $(tooldir)/bin/gcc$(exeext); \
-	    $(INSTALL_PROGRAM) gcc-cross$(exeext) $(tooldir)/bin/gcc$(exeext); \
-	  else true; fi; \
-	else \
-	  rm -f $(bindir)/$(GCC_INSTALL_NAME)$(exeext); \
-	  $(INSTALL_PROGRAM) xgcc$(exeext) $(bindir)/$(GCC_INSTALL_NAME)$(exeext); \
-	  rm -f $(bindir)/$(target_alias)-gcc-1$(exeext); \
-	  ln $(bindir)/$(GCC_INSTALL_NAME)$(exeext) $(bindir)/$(target_alias)-gcc-1$(exeext) \
-	    > /dev/null 2>&1 \
-	    || cp $(bindir)/$(GCC_INSTALL_NAME)$(exeext) $(bindir)/$(target_alias)-gcc-1$(exeext); \
-	  mv $(bindir)/$(target_alias)-gcc-1$(exeext) $(bindir)/$(target_alias)-gcc$(exeext); \
-	fi
+	rm -f $(local_prefix)/bin/$(GCC_CROSS_NAME)
+	$(INSTALL_PROGRAM) gcc-cross $(local_prefix)/bin/$(GCC_CROSS_NAME)
 
 # Install the info files.
 # $(INSTALL_DATA) might be a relative pathname, so we can't cd into srcdir
