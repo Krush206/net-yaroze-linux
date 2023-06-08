@@ -141,7 +141,7 @@ INSTALL_ASSERT_H = install-assert-h
 # The GCC to use for compiling libgcc2.a, enquire, and libgcc1-test.
 # Usually the one we just built.
 # Don't use this as a dependency--use $(GCC_PASSES) or $(GCC_PARTS).
-GCC_FOR_TARGET = ./xgcc -B./
+GCC_FOR_TARGET = ./xgcc
 
 # This is used instead of ALL_CFLAGS when compiling with GCC_FOR_TARGET.
 # It omits XCFLAGS, and specifies -B./.
@@ -214,7 +214,7 @@ prefix = /usr
 # gcc as the native cc, `local_prefix' may not be `prefix' which is
 # `/usr'.
 # NOTE: local_prefix *should not* default from prefix.
-local_prefix = /usr/local
+local_prefix = $(prefix)/local
 # Directory in which to put host dependent programs and libraries
 exec_prefix = ${local_prefix}/psx
 # Directory in which to put the executable for the command `gcc'
@@ -224,7 +224,7 @@ libdir = ${exec_prefix}/lib
 # Directory in which the compiler finds executables, libraries, etc.
 libsubdir = $(libdir)/gcc
 # Directory in which the compiler finds g++ includes.
-gxx_include_dir= ${prefix}/include/g++
+gxx_include_dir= ${local_prefix}/include/g++
 # Directory in which the old g++ header files may be found.
 old_gxx_include_dir= $(libdir)/g++-include
 # Directory to search for site-specific includes.
@@ -233,14 +233,14 @@ includedir = $(local_prefix)/include
 # (But this currently agrees with what is in cross-make.)
 assertdir = $(tooldir)/include
 # where the info files go
-infodir = ${prefix}/info
+infodir = ${local_prefix}/info
 # Extension (if any) to put in installed man-page filename.
 manext = .1
 objext = .o
 exeext = 
 
 # Directory in which to put man pages.
-mandir = ${prefix}/man/man1
+mandir = ${local_prefix}/man/man1
 # Directory in which to find other cross-compilation tools and headers.
 # Used in install-cross.
 tooldir = $(exec_prefix)
