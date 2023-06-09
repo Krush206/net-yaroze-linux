@@ -5,8 +5,6 @@
 #include "ansidecl.h"
 #include "libiberty.h"
 
-#include "config.h"
-
 #ifndef NEED_sys_errlist
 /* Note that errno.h (not sure what OS) or stdio.h (BSD 4.4, at least)
    might declare sys_errlist in a way that the compiler might consider
