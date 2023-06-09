@@ -66,12 +66,12 @@ T_CFLAGS =
 X_CPPFLAGS =
 T_CPPFLAGS =
 
-CC = gcc
+CC = $(host_alias)-gcc
 BISON = bison
 BISONFLAGS =
 LEX = flex
 LEXFLAGS =
-AR = ar
+AR = $(host_alias)-ar
 AR_FLAGS = rc
 DLLTOOL = dlltool
 SHELL = /bin/sh
@@ -97,7 +97,7 @@ MAKEOVERRIDES =
 P =
 
 # How to invoke ranlib.
-RANLIB = ranlib
+RANLIB = $(host_alias)-ranlib
 # Test to use to see whether ranlib exists on the system.
 RANLIB_TEST = [ -f /usr/bin/ranlib -o -f /bin/ranlib ]
 
@@ -105,14 +105,14 @@ RANLIB_TEST = [ -f /usr/bin/ranlib -o -f /bin/ranlib ]
 # OLDCC should not be the GNU C compiler,
 # since that would compile typical libgcc1.a functions such as mulsi3
 # into infinite recursions.
-OLDCC = cc
+OLDCC = $(host_alias)-gcc
 
 # CFLAGS for use with OLDCC, for compiling libgcc1.a.
 # NOTE: -O does not work on some Unix systems!
 CCLIBFLAGS = -O
 
 # Version of ar to use when compiling libgcc1.a.
-OLDAR = ar
+OLDAR = $(host_alias)-ar
 OLDAR_FLAGS = qc
 
 # Target to use when installing include directory.  Either
@@ -142,7 +142,7 @@ INSTALL_ASSERT_H = install-assert-h
 # The GCC to use for compiling libgcc2.a, enquire, and libgcc1-test.
 # Usually the one we just built.
 # Don't use this as a dependency--use $(GCC_PASSES) or $(GCC_PARTS).
-GCC_FOR_TARGET = ./xgcc -B./
+GCC_FOR_TARGET = ./xgcc
 
 # This is used instead of ALL_CFLAGS when compiling with GCC_FOR_TARGET.
 # It omits XCFLAGS, and specifies -B./.
@@ -202,20 +202,20 @@ mainversion=`sed -e 's/.*\"\([0-9]*\.[0-9]*\).*/\1/' < $(srcdir)/version.c`
 
 # Common prefix for installation directories.
 # NOTE: This directory must exist when you start installation.
-prefix = /usr/local
+prefix = /usr
 # Directory in which to put localized header files. On the systems with
 # gcc as the native cc, `local_prefix' may not be `prefix' which is
 # `/usr'.
 # NOTE: local_prefix *should not* default from prefix.
-local_prefix = /usr/local
+local_prefix = ${prefix}/local
 # Directory in which to put host dependent programs and libraries
-exec_prefix = ${prefix}
+exec_prefix = ${local_prefix}/psx
 # Directory in which to put the executable for the command `gcc'
 bindir = ${exec_prefix}/bin
 # Directory in which to put the directories used by the compiler.
 libdir = ${exec_prefix}/lib
 # Directory in which the compiler finds executables, libraries, etc.
-libsubdir = $(libdir)/gcc-lib/$(target_alias)/$(version)
+libsubdir = $(libdir)/gcc
 # Directory in which the compiler finds g++ includes.
 gxx_include_dir= ${prefix}/include/g++
 # Directory in which the old g++ header files may be found.
@@ -226,17 +226,17 @@ includedir = $(local_prefix)/include
 # (But this currently agrees with what is in cross-make.)
 assertdir = $(tooldir)/include
 # where the info files go
-infodir = ${prefix}/info
+infodir = ${exec_prefix}/info
 # Extension (if any) to put in installed man-page filename.
 manext = .1
 objext = .o
 exeext = 
 
 # Directory in which to put man pages.
-mandir = ${prefix}/man/man1
+mandir = ${exec_prefix}/man/man1
 # Directory in which to find other cross-compilation tools and headers.
 # Used in install-cross.
-tooldir = $(exec_prefix)/$(target_alias)
+tooldir = $(exec_prefix)
 # Dir for temp files.
 tmpdir = /tmp
 
@@ -2547,7 +2547,7 @@ c-common.o : c-common.c $(CONFIG_H) $(TREE_H) c-tree.h c-lex.h flags.h
 
 DRIVER_DEFINES = \
   -DSTANDARD_STARTFILE_PREFIX=\"$(libdir)/\" \
-  -DSTANDARD_EXEC_PREFIX=\"$(libdir)/gcc-lib/\" \
+  -DSTANDARD_EXEC_PREFIX=\"$(libdir)/gcc/\" \
   -DDEFAULT_TARGET_VERSION=\"$(version)\" \
   -DDEFAULT_TARGET_MACHINE=\"$(target_alias)\" \
   -DTOOLDIR_BASE_PREFIX=\"$(exec_prefix)/\"
@@ -3482,14 +3482,12 @@ install-float-h-cross: installdirs
 # Create the installation directories.
 installdirs:
 	-if [ -d $(prefix) ] ; then true ; else mkdir $(prefix) ; chmod a+rx $(prefix) ; fi
+	-if [ -d $(local_prefix) ] ; then true ; else mkdir $(local_prefix) ; chmod a+rx $(local_prefix) ; fi
 	-if [ -d $(exec_prefix) ] ; then true ; else mkdir $(exec_prefix) ; chmod a+rx $(exec_prefix) ; fi
 	-if [ -d $(libdir) ] ; then true ; else mkdir $(libdir) ; chmod a+rx $(libdir) ; fi
-	-if [ -d $(libdir)/gcc-lib ] ; then true ; else mkdir $(libdir)/gcc-lib ; chmod a+rx $(libdir)/gcc-lib ; fi
+	-if [ -d $(libdir)/gcc ] ; then true ; else mkdir $(libdir)/gcc ; chmod a+rx $(libdir)/gcc ; fi
 # This dir isn't currently searched by cpp.
-#	-if [ -d $(libdir)/gcc-lib/include ] ; then true ; else mkdir $(libdir)/gcc-lib/include ; chmod a+rx $(libdir)/gcc-lib/include ; fi
-	-if [ -d $(libdir)/gcc-lib/$(target_alias) ] ; then true ; else mkdir $(libdir)/gcc-lib/$(target_alias) ; chmod a+rx $(libdir)/gcc-lib/$(target_alias) ; fi
-	-if [ -d $(libdir)/gcc-lib/$(target_alias)/$(version) ] ; then true ; else mkdir $(libdir)/gcc-lib/$(target_alias)/$(version) ; chmod a+rx $(libdir)/gcc-lib/$(target_alias)/$(version) ; fi
-	-if [ -d $(libdir)/gcc-lib/$(target_alias)/$(version)/include ] ; then true ; else mkdir $(libdir)/gcc-lib/$(target_alias)/$(version)/include ; chmod a+rx $(libdir)/gcc-lib/$(target_alias)/$(version)/include ; fi
+#	-if [ -d $(libdir)/gcc/include ] ; then true ; else mkdir $(libdir)/gcc/include ; chmod a+rx $(libdir)/gcc/include ; fi
 	-if [ -d $(bindir) ] ; then true ; else mkdir $(bindir) ; chmod a+rx $(bindir) ; fi
 	-if [ -d $(includedir) ] ; then true ; else mkdir $(includedir) ; chmod a+rx $(includedir) ; fi
 	-if [ -d $(tooldir) ] ; then true ; else mkdir $(tooldir) ; chmod a+rx $(tooldir) ; fi
@@ -3552,20 +3550,8 @@ install-common: native installdirs $(EXTRA_PARTS) lang.install-common
 # Install the driver program as $(target_alias)-gcc
 # and also as either gcc (if native) or $(tooldir)/bin/gcc.
 install-driver: xgcc
-	-if [ -f gcc-cross$(exeext) ] ; then \
-	  rm -f $(bindir)/$(GCC_CROSS_NAME)$(exeext); \
-	  $(INSTALL_PROGRAM) gcc-cross$(exeext) $(bindir)/$(GCC_CROSS_NAME)$(exeext); \
-	  if [ -d $(tooldir)/bin/. ] ; then \
-	    rm -f $(tooldir)/bin/gcc$(exeext); \
-	    $(INSTALL_PROGRAM) gcc-cross$(exeext) $(tooldir)/bin/gcc$(exeext); \
-	  else true; fi; \
-	else \
-	  rm -f $(bindir)/$(GCC_INSTALL_NAME)$(exeext); \
-	  $(INSTALL_PROGRAM) xgcc$(exeext) $(bindir)/$(GCC_INSTALL_NAME)$(exeext); \
-	  rm -f $(bindir)/$(target_alias)-gcc-1$(exeext); \
-	  $(LN) $(bindir)/$(GCC_INSTALL_NAME)$(exeext) $(bindir)/$(target_alias)-gcc-1$(exeext); \
-	  mv $(bindir)/$(target_alias)-gcc-1$(exeext) $(bindir)/$(target_alias)-gcc$(exeext); \
-	fi
+	rm -f $(local_prefix)/bin/$(GCC_CROSS_NAME)
+	$(INSTALL_PROGRAM) gcc-cross $(local_prefix)/bin/$(GCC_CROSS_NAME)
 
 # Install the info files.
 # $(INSTALL_DATA) might be a relative pathname, so we can't cd into srcdir
