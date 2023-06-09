@@ -214,7 +214,7 @@ prefix = /usr
 # gcc as the native cc, `local_prefix' may not be `prefix' which is
 # `/usr'.
 # NOTE: local_prefix *should not* default from prefix.
-local_prefix = $(prefix)/local
+local_prefix = ${prefix}/local
 # Directory in which to put host dependent programs and libraries
 exec_prefix = ${local_prefix}/psx
 # Directory in which to put the executable for the command `gcc'
@@ -224,7 +224,7 @@ libdir = ${exec_prefix}/lib
 # Directory in which the compiler finds executables, libraries, etc.
 libsubdir = $(libdir)/gcc
 # Directory in which the compiler finds g++ includes.
-gxx_include_dir= ${local_prefix}/include/g++
+gxx_include_dir= ${prefix}/include/g++
 # Directory in which the old g++ header files may be found.
 old_gxx_include_dir= $(libdir)/g++-include
 # Directory to search for site-specific includes.
@@ -2885,12 +2885,12 @@ install-float-h-cross: installdirs
 # Create the installation directories.
 installdirs:
 	-if [ -d $(prefix) ] ; then true ; else mkdir $(prefix) ; chmod a+rx $(prefix) ; fi
+	-if [ -d $(local_prefix) ] ; then true ; else mkdir $(local_prefix) ; chmod a+rx $(local_prefix) ; fi
 	-if [ -d $(exec_prefix) ] ; then true ; else mkdir $(exec_prefix) ; chmod a+rx $(exec_prefix) ; fi
 	-if [ -d $(libdir) ] ; then true ; else mkdir $(libdir) ; chmod a+rx $(libdir) ; fi
 	-if [ -d $(libdir)/gcc ] ; then true ; else mkdir $(libdir)/gcc ; chmod a+rx $(libdir)/gcc ; fi
 # This dir isn't currently searched by cpp.
 #	-if [ -d $(libdir)/gcc/include ] ; then true ; else mkdir $(libdir)/gcc/include ; chmod a+rx $(libdir)/gcc/include ; fi
-	-if [ -d $(libdir)/gcc ] ; then true ; else mkdir $(libdir)/gcc ; chmod a+rx $(libdir)/gcc ; fi
 	-if [ -d $(bindir) ] ; then true ; else mkdir $(bindir) ; chmod a+rx $(bindir) ; fi
 	-if [ -d $(includedir) ] ; then true ; else mkdir $(includedir) ; chmod a+rx $(includedir) ; fi
 	-if [ -d $(tooldir) ] ; then true ; else mkdir $(tooldir) ; chmod a+rx $(tooldir) ; fi
