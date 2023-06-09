@@ -44,6 +44,9 @@ Boston, MA 02111-1307, USA.  */
 #undef	GOFAST_RENAME_LIBCALLS
 #endif
 
+#undef CC1_SPEC
+#define CC1_SPEC "-msoft-float"
+
 #undef CPP_PREDEFINES
 #define CPP_PREDEFINES "-Dmips -DMIPSEL -DR3000 -D_mips -D_MIPSEL -D_R3000 -D__PSX__"
 
