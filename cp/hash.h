@@ -53,9 +53,6 @@ hash (str, len)
   return hval + asso_values[str[len - 1]];
 }
 
-#ifdef __GNUC__
-inline
-#endif
 struct resword *
 is_reserved_word (str, len)
      register char *str;
