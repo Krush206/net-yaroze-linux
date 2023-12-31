@@ -197,7 +197,7 @@ struct yy_buffer_state
 #define YY_BUFFER_EOF_PENDING 2
 	};
 
-static YY_BUFFER_STATE yy_current_buffer = 0;
+YY_BUFFER_STATE yy_current_buffer = 0;
 
 /* We provide macros for accessing buffer states in case in the
  * future we want to put the buffer states in a more general
