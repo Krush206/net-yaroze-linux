@@ -486,7 +486,6 @@ ALL_MODULES = \
 	all-sn \
 	all-tar \
 	all-tcl \
-	all-texinfo \
 	all-textutils \
 	all-tgas \
 	all-time \
@@ -549,7 +548,6 @@ CROSS_CHECK_MODULES = \
 	check-sim \
 	check-tar \
 	check-tcl \
-	check-texinfo \
 	check-textutils \
 	check-tgas \
 	check-time \
@@ -613,7 +611,6 @@ INSTALL_MODULES = \
 	install-sn \
 	install-tar \
 	install-tcl \
-	install-texinfo \
 	install-textutils \
 	install-tgas \
 	install-time \
@@ -761,7 +758,6 @@ CLEAN_MODULES = \
 	clean-sn \
 	clean-tar \
 	clean-tcl \
-	clean-texinfo \
 	clean-textutils \
 	clean-tgas \
 	clean-time \

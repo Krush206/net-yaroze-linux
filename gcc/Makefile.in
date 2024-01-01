@@ -2142,7 +2142,7 @@ install: $(INSTALL_TARGET) ; @true
 # Install the driver last so that the window when things are
 # broken is small.
 install-normal: install-common $(INSTALL_HEADERS) $(INSTALL_LIBGCC) \
-    install-man install-info lang.install-normal install-driver
+    install-man lang.install-normal install-driver
 
 # Do nothing while making gcc with a cross-compiler. The person who
 # makes gcc for the target machine has to know how to put a complete
@@ -2180,7 +2180,6 @@ installdirs:
 	-if [ -d $(includedir) ] ; then true ; else mkdir $(includedir) ; chmod a+rx $(includedir) ; fi
 	-if [ -d $(tooldir) ] ; then true ; else mkdir $(tooldir) ; chmod a+rx $(tooldir) ; fi
 	-if [ -d $(assertdir) ] ; then true ; else mkdir $(assertdir) ; chmod a+rx $(assertdir) ; fi
-	-if [ -d $(infodir) ] ; then true ; else mkdir $(infodir) ; chmod a+rx $(infodir) ; fi
 # We don't use mkdir -p to create the parents of mandir,
 # because some systems don't support it.
 # Instead, we use this technique to create the immediate parent of mandir.
