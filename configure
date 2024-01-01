@@ -804,7 +804,7 @@ fi
 # If CC and CXX are not set in the environment, and the Makefile
 # exists, try to extract them from it.  This is to handle running
 # ./config.status by hand.
-if [ -z "${CC}" ] && [ -r Makefile ] && [ "${host_alias}" != 'NOHOST' ]; then
+if [ -z "${CC}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -814,7 +814,7 @@ t loop
   rm -f Makefile.cc
 fi
 
-if [ -z "${CFLAGS}" ] && [ -r Makefile ] && [ "${host_alias}" != 'NOHOST' ]; then
+if [ -z "${CFLAGS}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -824,7 +824,7 @@ t loop
   rm -f Makefile.cc
 fi
 
-if [ -z "${CXX}" ] && [ -r Makefile ] && [ "${host_alias}" != 'NOHOST' ]; then
+if [ -z "${CXX}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -834,7 +834,7 @@ t loop
   rm -f Makefile.cc
 fi
 
-if [ -z "${CXXFLAGS}" ] && [ -r Makefile ] && [ "${host_alias}" != 'NOHOST' ]; then
+if [ -z "${CXXFLAGS}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
