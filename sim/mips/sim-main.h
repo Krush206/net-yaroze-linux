@@ -439,7 +439,7 @@ enum float_operation
 #define NR_COP0_GPR	32
   unsigned_word cop0_gpr[NR_COP0_GPR];
 #define COP0_GPR	((CPU)->cop0_gpr)
-#define COP0_BADVADDR ((unsigned32)(COP0_GPR[8]))
+#define COP0_BADVADDR (*(unsigned32 *)&(COP0_GPR[8]))
 
   /* Keep the current format state for each register: */
   FP_formats fpr_state[32];
