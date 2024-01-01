@@ -29,7 +29,7 @@ tooldir = $(exec_prefix)/$(target)
 program_transform_name =
 
 datadir = $(prefix)/share
-mandir = $(prefix)/man
+mandir = $(datadir)/man
 man1dir = $(mandir)/man1
 man2dir = $(mandir)/man2
 man3dir = $(mandir)/man3
