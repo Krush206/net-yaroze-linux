@@ -35,15 +35,15 @@ VPATH = @srcdir@
 
 # List of language subdirectories.
 # This is overridden by configure.
-SUBDIRS =@subdirs@
+SUBDIRS =
 
 # Selection of languages to be made.
 # This is overridden by configure.
-LANGUAGES = c proto gcov @all_languages@
+LANGUAGES = c proto gcov
 
 # Selection of languages to be made during stage1 build.
 # This is overridden by configure.
-BOOT_LANGUAGES = c @all_boot_languages@
+BOOT_LANGUAGES = c
 
 ALLOCA =
 ALLOCA_FLAGS =
