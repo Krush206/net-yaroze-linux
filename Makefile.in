@@ -889,7 +889,7 @@ check: $(CHECK_MODULES) \
 # Installation targets.
 
 .PHONY: install uninstall source-vault binary-vault vault-install
-install: $(INSTALL_TARGET) install-info
+install: $(INSTALL_TARGET)
 
 uninstall:
 	@echo "the uninstall target is not supported in this tree"
