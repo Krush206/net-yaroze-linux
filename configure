@@ -671,7 +671,7 @@ fi
 # If CC and CXX are not set in the environment, and the Makefile
 # exists, try to extract them from it.  This is to handle running
 # ./config.status by hand.
-if [ -z "${CC}" -a -r Makefile ]; then
+if [ -z "${CC}" -a -r Makefile ] && [ "${host_alias}" != 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -681,7 +681,7 @@ t loop
   rm -f Makefile.cc
 fi
 
-if [ -z "${CXX}" -a -r Makefile ]; then
+if [ -z "${CXX}" -a -r Makefile ] && [ "${host_alias}" != 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -823,6 +823,16 @@ t loop
   export LD
   export NM
   export RANLIB
+elif [ "${host_alias}" != 'NOHOST' ]; then
+  AR=${AR-${host_alias}-ar}
+  AS=${AS-${host_alias}-as}
+  CC=${CC-${host_alias}-gcc}
+  CXX=${CXX-${host_alias}-gcc}
+  DLLTOOL=${DLLTOOL-${host_alias}-dlltool}
+  LD=${LD-${host_alias}-ld}
+  MAKEINFO=${MAKEINFO-makeinfo}
+  NM=${NM-${host_alias}-nm}
+  RANLIB=${RANLIB-${host_alias}-ranlib}
 else
   # If CC is still not set, try to get gcc.
   if [ -z "${CC}" ]; then
