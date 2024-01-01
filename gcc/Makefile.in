@@ -36,12 +36,12 @@ VPATH = @srcdir@
 
 # List of language subdirectories.
 # This is overridden by configure.
-SUBDIRS =@subdirs@
+SUBDIRS =
 
 # Selection of languages to be made.
 # This is overridden by configure.
 CONFIG_LANGUAGES = @all_languages@
-LANGUAGES = c proto gcov$(exeext) $(CONFIG_LANGUAGES)
+LANGUAGES = c proto gcov
 
 # Languages should create dependencies of $(INTL_TARGETS) on generated
 # sources in Make-lang.in.  Example:
@@ -50,7 +50,7 @@ INTL_TARGETS = intl.all intl.install intl.distdir
 
 # Selection of languages to be made during stage1 build.
 # This is overridden by configure.
-BOOT_LANGUAGES = c @all_boot_languages@
+BOOT_LANGUAGES = c
 
 ALLOCA =
 ALLOCA_FLAGS =
