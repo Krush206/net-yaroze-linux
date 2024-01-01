@@ -805,7 +805,7 @@ fi
 # If CC and CXX are not set in the environment, and the Makefile
 # exists, try to extract them from it.  This is to handle running
 # ./config.status by hand.
-if [ -z "${CC}" ] && [ -r Makefile ]; then
+if [ -z "${CC}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -815,7 +815,7 @@ t loop
   rm -f Makefile.cc
 fi
 
-if [ -z "${CFLAGS}" ] && [ -r Makefile ]; then
+if [ -z "${CFLAGS}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -825,7 +825,7 @@ t loop
   rm -f Makefile.cc
 fi
 
-if [ -z "${CXX}" ] && [ -r Makefile ]; then
+if [ -z "${CXX}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -835,7 +835,7 @@ t loop
   rm -f Makefile.cc
 fi
 
-if [ -z "${CXXFLAGS}" ] && [ -r Makefile ]; then
+if [ -z "${CXXFLAGS}" ] && [ -r Makefile ] && [ "${host_alias}" = 'NOHOST' ]; then
   sed -n -e ':loop
 /\\$/ N
 s/\\\n//g
@@ -1008,6 +1008,20 @@ t loop
   export NM
   export RANLIB
   export WINDRES
+elif [ "${host_alias}" != 'NOHOST' ]; then
+  AR=${AR-${host_alias}-ar}
+  AS=${AS-${host_alias}-as}
+  BISON=${BISON-bison}
+  CC=${CC-${host_alias}-gcc}
+  CFLAGS=${CFLAGS-"-g -O2 ${warn_cflags}"}
+  CXX=${CXX-${host_alias}-c++}
+  CXXFLAGS=${CXXFLAGS-"-g -O2"}
+  DLLTOOL=${DLLTOOL-${host_alias}-dlltool}
+  LD=${LD-${host_alias}-ld}
+  MAKEINFO=${MAKEINFO-makeinfo}
+  NM=${NM-${host_alias}-nm}
+  RANLIB=${RANLIB-${host_alias}-ranlib}
+  WINDRES=${WINDRES-${host_alias}-windres}
 else
   # If CC is still not set, try to get gcc.
   if [ -z "${CC}" ]; then
