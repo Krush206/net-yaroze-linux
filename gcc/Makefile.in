@@ -2434,7 +2434,7 @@ install: $(INSTALL_TARGET) ; @true
 # Install the driver last so that the window when things are
 # broken is small.
 install-normal: install-common $(INSTALL_HEADERS) $(INSTALL_LIBGCC) \
-    $(INSTALL_CPP) install-man install-info intl.install lang.install-normal \
+    $(INSTALL_CPP) install-man intl.install lang.install-normal \
     install-driver
 
 # Do nothing while making gcc with a cross-compiler. The person who
@@ -2491,7 +2491,6 @@ installdirs:
 	-if [ -d $(includedir) ] ; then true ; else mkdir $(includedir) ; chmod a+rx $(includedir) ; fi
 	-if [ -d $(gcc_tooldir) ] ; then true ; else mkdir $(gcc_tooldir) ; chmod a+rx $(gcc_tooldir) ; fi
 	-if [ -d $(assertdir) ] ; then true ; else mkdir $(assertdir) ; chmod a+rx $(assertdir) ; fi
-	-if [ -d $(infodir) ] ; then true ; else mkdir $(infodir) ; chmod a+rx $(infodir) ; fi
 # We don't use mkdir -p to create the parents of man1dir,
 # because some systems don't support it.
 # Instead, we use this technique to create the immediate parent of man1dir.
