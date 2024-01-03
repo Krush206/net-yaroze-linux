@@ -308,21 +308,21 @@ VFPRINTF=@vfprintf@
 DOPRINT=@doprint@
 
 # Specify the rule for actually making libgcc.a,
-LIBGCC = libgcc.a
+LIBGCC =
 # and the rule for installing it.
-INSTALL_LIBGCC = install-libgcc
+INSTALL_LIBGCC =
 
 # Specify the rule for actually making libgcc1.a.
 # The value may be empty; that means to do absolutely nothing
 # with or for libgcc1.a.
-LIBGCC1 = libgcc1.a
+LIBGCC1 =
 
 # Specify the rule for making libgcc1.a for a cross-compiler.
 # The default rule assumes that libgcc1.a is supplied by the user.
-CROSS_LIBGCC1 = libgcc1.cross
+CROSS_LIBGCC1 =
 
 # Specify the rule for actually making libgcc2.a.
-LIBGCC2 = libgcc2.a
+LIBGCC2 =
 
 # Options to use when compiling libgcc2.a.
 # -g1 causes output of debug info only for file-scope entities.
