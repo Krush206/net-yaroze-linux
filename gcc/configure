@@ -4206,6 +4206,9 @@ for machine in $build $host $target; do
 		tmake_file=mips/t-ecoff
 		;;
 	mipsel-*-elf*)
+		gas=yes
+		gnu_ld=yes
+		cputype=mips
 		tm_file="mips/elfl.h libgloss.h"
 		tmake_file=mips/t-ecoff
 		;;
