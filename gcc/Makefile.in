@@ -2265,7 +2265,7 @@ install: $(INSTALL_TARGET) ; @true
 # Install the driver last so that the window when things are
 # broken is small.
 install-normal: install-common $(INSTALL_HEADERS) $(INSTALL_LIBGCC) \
-    $(INSTALL_CPP) install-man install-info lang.install-normal \
+    $(INSTALL_CPP) install-man lang.install-normal \
     install-driver
 
 # Do nothing while making gcc with a cross-compiler. The person who
