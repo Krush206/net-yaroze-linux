@@ -1,0 +1,72 @@
+Sun Mar 14 02:38:07 PST 1999 Jeff Law  (law@cygnus.com)
+
+	* egcs-1.1.2 Released.
+
+1998-11-29  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test_summary (EOF): remove double backslash
+	Reported by Franz Sirl <Franz.Sirl-kernel@lauterbach.com>
+
+1998-11-29  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test_summary: updated to version in development branch
+
+1998-08-14  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test_installed: new script for testing already-installed
+ 	gcc/g++/g77
+
+1998-08-13  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test_summary: assigned copyright to FSF
+	
+Wed Aug 12 19:59:36 1998  Gerald Pfeifer  <pfeifer@dbai.tuwien.ac.at>
+
+	* egcs_update: Assigned copyright to FSF.
+
+Tue Aug 11 17:55:53 1998  Gerald Pfeifer  <pfeifer@dbai.tuwien.ac.at>
+                          Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* egcs_update: New switch --nostdflags and documentation
+	enhancements.
+
+Tue Aug 11 17:33:19 1998  Gerald Pfeifer  <pfeifer@dbai.tuwien.ac.at>
+
+	* egcs_update: New script.
+
+Fri Jun 19 02:36:59 1998  Alexandre Oliva <oliva@dcc.unicamp.br>
+
+	* test_summary: new switch (-i) and environment variable
+	(append_logs) for including files in the report.
+
+1998-06-01  Manfred Hollstein  <manfred@s-direktnet.de>
+
+	* warn_summary: Update to Kaveh's latest version allowing to
+	specify the last stage built.
+
+1998-05-29  Bruce Korb <korbb@datadesign.com>
+
+	* fixinc/mkfixinc.sh
+	Changes to make it easier to invoke on platforms that
+	normally do not invoke fixincludes.
+
+	* fixinc/inclhack.def
+	Applied fixes from egcs/gcc/fixincludes from the past several
+	months.
+
+1998-05-28  Bruce Korb <korbb@datadesign.com>
+
+	* fixinc/*: Updated most everything for a first real
+	try at getting "fast_fixincludes" working.
+
+1998-05-28  Jason Merrill  <jason@yorick.cygnus.com>
+
+	* index-prop: New file.
+
+Sat May 23 23:38:49 1998  Matthias Klose  <doko@cs.tu-berlin.de>
+
+	* test_summary: find good awk (copied from warn_summary).
+
+Sat May 23 23:38:33 1998  Jeffrey A Law  (law@cygnus.com)
+
+	* test_summary, warn_summary: New files
