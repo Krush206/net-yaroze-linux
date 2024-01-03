@@ -44,7 +44,7 @@ extern char gdbinit[];
 
 /* Temporary variable for SET_TOP_LEVEL.  */
 
-static int top_level_val;
+extern int top_level_val;
 
 /* Do a setjmp on error_return and quit_return.  catch_errors is
    generally a cleaner way to do this, but main() would look pretty

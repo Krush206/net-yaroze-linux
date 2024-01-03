@@ -668,13 +668,12 @@ struct continuation_arg
   PTR data;
 };
 
-static struct continuation
+extern struct continuation
 {
   void (*continuation_hook) PARAMS ((struct continuation_arg *));
   struct continuation_arg *arg_list;
   struct continuation *next;
-}
-continuation;
+};
 
 /* In infrun.c. */
 extern struct continuation *cmd_continuation;
