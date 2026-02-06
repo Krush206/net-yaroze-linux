@@ -57,6 +57,8 @@ int xdb_commands = 0;
 /* Whether dbx commands will be handled */
 int dbx_commands = 0;
 
+int top_level_val = 0;
+
 GDB_FILE *gdb_stdout;
 GDB_FILE *gdb_stderr;
 GDB_FILE *gdb_stdlog;

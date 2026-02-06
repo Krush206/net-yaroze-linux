@@ -34,7 +34,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 oldincludedir=/usr/include
 infodir=${prefix}/info
-mandir=${prefix}/man
+mandir=${datadir}/man
 gxx_include_dir=${includedir}/g++
 
 tooldir = $(exec_prefix)/$(target)
