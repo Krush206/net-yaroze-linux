@@ -35,15 +35,15 @@ VPATH = @srcdir@
 
 # List of language subdirectories.
 # This is overridden by configure.
-SUBDIRS =@subdirs@
+SUBDIRS =
 
 # Selection of languages to be made.
 # This is overridden by configure.
-LANGUAGES = c proto gcov$(exeext) @all_languages@
+LANGUAGES = c proto gcov
 
 # Selection of languages to be made during stage1 build.
 # This is overridden by configure.
-BOOT_LANGUAGES = c @all_boot_languages@
+BOOT_LANGUAGES = c
 
 ALLOCA =
 ALLOCA_FLAGS =
@@ -308,21 +308,21 @@ VFPRINTF=@vfprintf@
 DOPRINT=@doprint@
 
 # Specify the rule for actually making libgcc.a,
-LIBGCC = libgcc.a
+LIBGCC =
 # and the rule for installing it.
-INSTALL_LIBGCC = install-libgcc
+INSTALL_LIBGCC =
 
 # Specify the rule for actually making libgcc1.a.
 # The value may be empty; that means to do absolutely nothing
 # with or for libgcc1.a.
-LIBGCC1 = libgcc1.a
+LIBGCC1 =
 
 # Specify the rule for making libgcc1.a for a cross-compiler.
 # The default rule assumes that libgcc1.a is supplied by the user.
-CROSS_LIBGCC1 = libgcc1.cross
+CROSS_LIBGCC1 =
 
 # Specify the rule for actually making libgcc2.a.
-LIBGCC2 = libgcc2.a
+LIBGCC2 =
 
 # Options to use when compiling libgcc2.a.
 # -g1 causes output of debug info only for file-scope entities.
@@ -2265,7 +2265,7 @@ install: $(INSTALL_TARGET) ; @true
 # Install the driver last so that the window when things are
 # broken is small.
 install-normal: install-common $(INSTALL_HEADERS) $(INSTALL_LIBGCC) \
-    $(INSTALL_CPP) install-man install-info lang.install-normal \
+    $(INSTALL_CPP) install-man lang.install-normal \
     install-driver
 
 # Do nothing while making gcc with a cross-compiler. The person who
