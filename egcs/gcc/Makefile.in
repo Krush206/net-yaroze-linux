@@ -60,7 +60,7 @@ ALLOCA_FINISH = true
 # XCFLAGS is used for most compilations but not when using the GCC just built.
 # TCFLAGS is used for compilations with the GCC just built.
 XCFLAGS =
-TCFLAGS =
+TCFLAGS = -mno-mips-tfile
 CFLAGS = -g
 BOOT_CFLAGS = -O2 $(CFLAGS)
 WARN_CFLAGS = 
@@ -308,21 +308,21 @@ VFPRINTF=@vfprintf@
 DOPRINT=@doprint@
 
 # Specify the rule for actually making libgcc.a,
-LIBGCC =
+LIBGCC = libgcc.a
 # and the rule for installing it.
-INSTALL_LIBGCC =
+INSTALL_LIBGCC = install-libgcc
 
 # Specify the rule for actually making libgcc1.a.
 # The value may be empty; that means to do absolutely nothing
 # with or for libgcc1.a.
-LIBGCC1 =
+LIBGCC1 = libgcc1.a
 
 # Specify the rule for making libgcc1.a for a cross-compiler.
 # The default rule assumes that libgcc1.a is supplied by the user.
-CROSS_LIBGCC1 =
+CROSS_LIBGCC1 = libgcc1.cross
 
 # Specify the rule for actually making libgcc2.a.
-LIBGCC2 =
+LIBGCC2 = libgcc2.a
 
 # Options to use when compiling libgcc2.a.
 # -g1 causes output of debug info only for file-scope entities.

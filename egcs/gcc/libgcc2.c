@@ -36,7 +36,7 @@ Boston, MA 02111-1307, USA.  */
    needing header files first.  */
 /* ??? This is not a good solution, since prototypes may be required in
    some cases for correct code.  See also frame.c.  */
-#ifndef inhibit_libc
+#if 0
 /* fixproto guarantees these system headers exist. */
 #include <stdlib.h>
 #include <unistd.h>
