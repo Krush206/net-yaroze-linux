@@ -858,7 +858,7 @@ t loop
   AS_FOR_TARGET=${AS_FOR_TARGET-${target_alias}-as}
   BISON=${BISON-bison}
   CC=${CC-${host_alias}-gcc}
-  CFLAGS=${CFLAGS-"-g -O2"}
+  CFLAGS=${CFLAGS-"-g -O2 -Wno-error=implicit-int -Wno-error=implicit-function-declaration"}
   CXX=${CXX-${host_alias}-c++}
   CXXFLAGS=${CXXFLAGS-"-g -O2"}
   CC_FOR_BUILD=${CC_FOR_BUILD-gcc}
@@ -933,7 +933,7 @@ elif [ "${host_alias}" != 'NOHOST' ]; then
   AS=${AS-${host_alias}-as}
   BISON=${BISON-bison}
   CC=${CC-${host_alias}-gcc}
-  CFLAGS=${CFLAGS-"-g -O2"}
+  CFLAGS=${CFLAGS-"-g -O2 -Wno-error=implicit-int -Wno-error=implicit-function-declaration"}
   CXX=${CXX-${host_alias}-c++}
   CXXFLAGS=${CXXFLAGS-"-g -O2"}
   DLLTOOL=${DLLTOOL-${host_alias}-dlltool}
@@ -952,7 +952,7 @@ else
 	CC="gcc"
 	echo 'void f(){}' > conftest.c
 	if test -z "`${CC} -g -c conftest.c 2>&1`"; then
-	  CFLAGS=${CFLAGS-"-g -O2"}
+	  CFLAGS=${CFLAGS-"-g -O2 -Wno-error=implicit-int -Wno-error=implicit-function-declaration"}
 	  CXXFLAGS=${CXXFLAGS-"-g -O2"}
 	else
 	  CFLAGS=${CFLAGS-"-O2"}
