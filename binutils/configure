@@ -903,7 +903,7 @@ do
 done
 
 # BINUTILS LOCAL: This is included in the default CFLAGS when using gcc.
-warn_cflags="-W -Wall"
+warn_cflags="-Wall -Wno-error=implicit-int -Wno-error=implicit-function-declaration"
 
 if [ "${build}" != "${host}" ]; then
   # If we are doing a Canadian Cross, in which the host and build systems
