@@ -1159,7 +1159,7 @@ sdbout_one_type (type)
       /* Output a structure type.  */
       {
 	int size = int_size_in_bytes (type);
-	int member_scl;
+	int member_scl = 0;
 	tree tem;
 	int i, n_baseclasses = 0;
 
@@ -1607,8 +1607,7 @@ sdbout_end_function (line)
 void
 sdbout_end_epilogue ()
 {
-  char *name = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (current_function_decl));
-  PUT_SDB_EPILOGUE_END (name);
+  PUT_SDB_EPILOGUE_END (IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (current_function_decl)));
 }
 
 /* Output sdb info for the given label.  Called only if LABEL_NAME (insn)
