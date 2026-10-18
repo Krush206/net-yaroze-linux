@@ -1419,7 +1419,14 @@ mips_relocate_section (output_bfd, info, input_bfd, input_section,
 	    s = symndx_to_section[int_rel.r_symndx];
 
 	  if (s == (asection *) NULL)
-	    abort ();
+	    {
+	      /* A section-relative relocation against a section that is not
+	     present in this input object (e.g. RELOC_SECTION_ABS, or a
+	     section such as .init that this particular object does not
+	     contain).  There is no section to adjust against, so leave
+	     the relocation value untouched (absolute relocs need no
+	     section adjustment).  */
+	    }
 	}
 
       /* The GPREL reloc uses an addend: the difference in the GP
@@ -1706,10 +1713,15 @@ mips_relocate_section (output_bfd, info, input_bfd, input_section,
 	  else
 	    {
 	      /* This is a relocation against a section.  Adjust the
-		 value by the amount the section moved.  */
-	      relocation = (s->output_section->vma
-			    + s->output_offset
-			    - s->vma);
+		 value by the amount the section moved.  If the section
+		 is not present in the input (s == NULL, e.g. an ABS
+		 section relocation) there is nothing to adjust.  */
+	      if (s != NULL)
+		relocation = (s->output_section->vma
+			      + s->output_offset
+			      - s->vma);
+	      else
+		relocation = 0;
 	    }
 
 	  relocation += addend;
@@ -1789,9 +1801,12 @@ mips_relocate_section (output_bfd, info, input_bfd, input_section,
 	  else
 	    {
 	      /* This is a reloc against a section.  */
-	      relocation = (s->output_section->vma
-			    + s->output_offset
-			    - s->vma);
+	      if (s != NULL)
+		relocation = (s->output_section->vma
+			      + s->output_offset
+			      - s->vma);
+	      else
+		relocation = 0;
 
 	      /* A PC relative reloc is already correct in the object
 		 file.  Make it look like a pcrel_offset relocation by
@@ -1830,12 +1845,18 @@ mips_relocate_section (output_bfd, info, input_bfd, input_section,
       /* MIPS_R_JMPADDR requires peculiar overflow detection.  The
 	 instruction provides a 28 bit address (the two lower bits are
 	 implicit zeroes) which is combined with the upper four bits
-	 of the instruction address.  */
-      if (r == bfd_reloc_ok
+	 of the instruction address.  For a relocatable (``ld -r'')
+	 output the sections may be laid out at arbitrary VMAs, so a
+	 branch that does not fit here can still fit in the final
+	 link; leave the relocation in place and let the final link
+	 decide.  */
+      if (! info->relocateable
+	  && s != NULL
+	  && r == bfd_reloc_ok
 	  && int_rel.r_type == MIPS_R_JMPADDR
 	  && (((relocation
 		+ addend
-		+ (int_rel.r_extern ? 0 : s->vma))
+		+ (int_rel.r_extern ? 0 : (s != NULL ? s->vma : 0)))
 	       & 0xf0000000)
 	      != ((input_section->output_section->vma
 		   + input_section->output_offset
@@ -1858,7 +1879,9 @@ mips_relocate_section (output_bfd, info, input_bfd, input_section,
 		if (int_rel.r_extern)
 		  name = h->root.root.string;
 		else
-		  name = bfd_section_name (input_bfd, s);
+		  name = (s != NULL
+			  ? bfd_section_name (input_bfd, s)
+			  : "*ABS*");
 		if (! ((*info->callbacks->reloc_overflow)
 		       (info, name, howto->name, (bfd_vma) 0,
 			input_bfd, input_section,
