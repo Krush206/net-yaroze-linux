@@ -323,10 +323,6 @@ typedef struct sec *sec_ptr;
 
 #define bfd_is_com_section(ptr) (((ptr)->flags & SEC_IS_COMMON) != 0)
 
-#define bfd_set_section_vma(bfd, ptr, val) (((ptr)->vma = (ptr)->lma= (val)), ((ptr)->user_set_vma = (boolean)true), true)
-#define bfd_set_section_alignment(bfd, ptr, val) (((ptr)->alignment_power = (val)),true)
-#define bfd_set_section_userdata(bfd, ptr, val) (((ptr)->userdata = (val)),true)
-
 typedef struct stat stat_type; 
 
 typedef enum bfd_print_symbol
@@ -1170,6 +1166,34 @@ typedef struct sec
    struct bfd_link_order *link_order_head;
    struct bfd_link_order *link_order_tail;
 } asection ;
+
+/* Note: the following setters are provided as inline functions rather
+   than macros because not all callers use the return value.  A macro
+   implementation would use a comma expression, eg:
+   "((ptr)->foo = val, TRUE)", and some compilers complain about comma
+   expressions whose result is not used.  */
+static INLINE boolean
+bfd_set_section_vma (bfd *abfd ATTRIBUTE_UNUSED, sec_ptr ptr, bfd_vma val)
+{
+  ptr->vma = ptr->lma = val;
+  ptr->user_set_vma = (boolean) true;
+  return true;
+}
+
+static INLINE boolean
+bfd_set_section_alignment (bfd *abfd ATTRIBUTE_UNUSED, sec_ptr ptr,
+			   unsigned int val)
+{
+  ptr->alignment_power = val;
+  return true;
+}
+
+static INLINE boolean
+bfd_set_section_userdata (bfd *abfd ATTRIBUTE_UNUSED, sec_ptr ptr, PTR val)
+{
+  ptr->userdata = val;
+  return true;
+}
 
      /* These sections are global, and are managed by BFD.  The application
        and target back end are not permitted to change the values in
