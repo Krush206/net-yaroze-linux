@@ -929,7 +929,6 @@ macro_expand (idx, in, m, out, comment_char)
   sb t;
   formal_entry *ptr;
   formal_entry *f;
-  int is_positional = 0;
   int is_keyword = 0;
   int narg = 0;
   const char *err;
@@ -1006,7 +1005,6 @@ macro_expand (idx, in, m, out, comment_char)
       else
 	{
 	  /* This is a positional arg */
-	  is_positional = 1;
 	  if (is_keyword)
 	    return _("can't mix positional and keyword arguments");
 
