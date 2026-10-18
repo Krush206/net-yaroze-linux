@@ -2832,7 +2832,7 @@ make_range (exp, pin_p, plow, phigh)
      tree *plow, *phigh;
 {
   enum tree_code code;
-  tree arg0, arg1, type = NULL_TREE;
+  tree arg0 = NULL_TREE, arg1 = NULL_TREE, type = NULL_TREE;
   tree orig_type = NULL_TREE;
   int in_p, n_in_p;
   tree low, high, n_low, n_high;
