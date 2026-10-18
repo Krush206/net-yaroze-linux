@@ -2234,7 +2234,7 @@ exp_equiv_p (x, y, validate, equal_values)
    Here we do not require that X or Y be valid (for registers referred to)
    for being in the hash table.  */
 
-static int
+static int ATTRIBUTE_UNUSED
 refers_to_p (x, y)
      rtx x, y;
 {
@@ -2292,7 +2292,7 @@ refers_to_p (x, y)
 /* ??? Despite what the comments say, this function is in fact frequently
    passed varying addresses.  This does not appear to cause any problems.  */
 
-static void
+static void ATTRIBUTE_UNUSED
 set_nonvarying_address_components (addr, size, pbase, pstart, pend)
      rtx addr;
      int size;
@@ -6178,10 +6178,10 @@ cse_insn (insn, libcall_insn)
 
   rtx src_eqv = 0;
   struct table_elt *src_eqv_elt = 0;
-  int src_eqv_volatile;
-  int src_eqv_in_memory;
-  int src_eqv_in_struct;
-  unsigned src_eqv_hash;
+  int src_eqv_volatile = 0;
+  int src_eqv_in_memory = 0;
+  int src_eqv_in_struct = 0;
+  unsigned src_eqv_hash = 0;
 
   struct set *sets;
 
@@ -8661,7 +8661,7 @@ cse_basic_block (from, to, next_branch, around_loop)
 	     its destination is the result of the block and hence should be
 	     recorded.  */
 
-	  if (p = find_reg_note (insn, REG_LIBCALL, NULL_RTX))
+	  if ((p = find_reg_note (insn, REG_LIBCALL, NULL_RTX)))
 	    libcall_insn = XEXP (p, 0);
 	  else if (find_reg_note (insn, REG_RETVAL, NULL_RTX))
 	    libcall_insn = NULL_RTX;
