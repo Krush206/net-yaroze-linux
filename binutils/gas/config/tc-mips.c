@@ -719,8 +719,11 @@ static const pseudo_typeS mips_pseudo_table[] =
   {"long", s_cons, 2},
   {"octa", s_cons, 4},
   {"quad", s_cons, 3},
+#ifdef OBJ_ECOFF
   /* Support for named sections, used by the Linux kernel (and by the
-     compiler's `section' attribute) when targeting ECOFF.  */
+     compiler's `section' attribute) when targeting ECOFF.  For ELF
+     these are handled natively by obj-elf.c, with proper section
+     flags and symbol types, so do not override them here.  */
   {"section", s_mips_section, 0},
   {"sect", s_mips_section, 0},
   {"previous", s_mips_previous, 0},
@@ -728,6 +731,7 @@ static const pseudo_typeS mips_pseudo_table[] =
      just swallow them.  */
   {"type", s_ignore, 0},
   {"size", s_ignore, 0},
+#endif
   {"short", s_cons, 1},
   {"single", s_float_cons, 'f'},
   {"stabn", s_mips_stab, 'n'},
