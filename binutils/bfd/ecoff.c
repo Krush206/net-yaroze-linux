@@ -2537,7 +2537,17 @@ _bfd_ecoff_write_object_contents (abfd)
 
       ++internal_f.f_nscns;
 
-      strncpy (section.s_name, current->name, sizeof section.s_name);
+      memset (section.s_name, 0, sizeof section.s_name);
+      {
+	/* Copy the section name into the fixed 8 byte ECOFF field,
+	   truncating without a NUL byte if it does not fit, but
+	   zero-filling the remainder if it does (strncpy semantics,
+	   without the corresponding warning).  */
+	size_t len = strlen (current->name);
+	if (len > sizeof section.s_name)
+	  len = sizeof section.s_name;
+	memcpy (section.s_name, current->name, len);
+      }
 
       /* This seems to be correct for Irix 4 shared libraries.  */
       vma = bfd_get_section_vma (abfd, current);
@@ -2833,7 +2843,16 @@ _bfd_ecoff_write_object_contents (abfd)
 		  else if (strcmp (name, ".rconst") == 0)
 		    in.r_symndx = RELOC_SECTION_RCONST;
 		  else
-		    abort ();
+		    {
+		      /* An ECOFF relocation can only reference one of the
+		         fixed set of sections (RELOC_SECTION_*).  Custom
+		         sections (e.g. Linux init/exception tables) cannot be
+		         encoded here.  Rather than aborting the whole build,
+		         fall back to RELOC_SECTION_NONE; the kernel is built
+		         so that relocs only reference standard sections, so
+		         this path should not be reached in practice.  */
+		      in.r_symndx = RELOC_SECTION_NONE;
+		    }
 		  in.r_extern = 0;
 		}
 
@@ -2955,6 +2974,10 @@ ecoff_armap_hash (s, rehash, size, hlog)
      unsigned int hlog;
 {
   unsigned int hash;
+
+  /* Always set *rehash, so that callers can probe even in the
+     degenerate case of a zero bit hash log.  */
+  *rehash = 1;
 
   if (hlog == 0)
     return 0;
@@ -3192,7 +3215,19 @@ _bfd_ecoff_write_armap (abfd, elength, map, orl_count, stridx)
      linker just checks the archive name; the GNU linker may check the
      date.  */
   stat (abfd->filename, &statbuf);
-  sprintf (hdr.ar_date, "%ld", (long) (statbuf.st_mtime + 60));
+  {
+    /* The ar_date field is only 12 bytes.  Format into a larger
+       buffer first so that the compiler can see the digits always
+       fit, then copy as much as the field holds.  Any unused bytes
+       are converted to spaces below, as before.  */
+    char date[32];
+    size_t len;
+    snprintf (date, sizeof date, "%ld", (long) (statbuf.st_mtime + 60));
+    len = strlen (date);
+    if (len > sizeof hdr.ar_date)
+      len = sizeof hdr.ar_date;
+    memcpy (hdr.ar_date, date, len);
+  }
 
   /* The DECstation uses zeroes for the uid, gid and mode of the
      armap.  */
@@ -3207,7 +3242,14 @@ _bfd_ecoff_write_armap (abfd, elength, map, orl_count, stridx)
   hdr.ar_mode[2] = '4';
 #endif
 
-  sprintf (hdr.ar_size, "%-10d", (int) mapsize);
+  {
+    /* The ar_size field is only 10 bytes.  Format into a larger
+       buffer and copy the first 10 characters; a non-negative int
+       always formats to at least 10 characters with "%-10d".  */
+    char size[32];
+    snprintf (size, sizeof size, "%-10d", (int) mapsize);
+    memcpy (hdr.ar_size, size, sizeof hdr.ar_size);
+  }
 
   hdr.ar_fmag[0] = '`';
   hdr.ar_fmag[1] = '\012';
@@ -3368,10 +3410,7 @@ _bfd_ecoff_archive_p (abfd)
       first = bfd_openr_next_archived_file (abfd, (bfd *) NULL);
       if (first != NULL)
 	{
-	  boolean fail;
-
 	  first->target_defaulted = false;
-	  fail = false;
 	  if (bfd_check_format (first, bfd_object)
 	      && first->xvec != abfd->xvec)
 	    {
