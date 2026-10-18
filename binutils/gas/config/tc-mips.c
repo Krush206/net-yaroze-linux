@@ -27,6 +27,7 @@
 #include "subsegs.h"
 
 #include <ctype.h>
+#include <stdlib.h>
 
 #ifdef USE_STDARG
 #include <stdarg.h>
@@ -634,6 +635,8 @@ static symbolS *get_symbol PARAMS ((void));
 static void mips_align PARAMS ((int to, int fill, symbolS *label));
 static void s_align PARAMS ((int));
 static void s_change_sec PARAMS ((int));
+static void s_mips_section PARAMS ((int));
+static void s_mips_previous PARAMS ((int));
 static void s_cons PARAMS ((int));
 static void s_float_cons PARAMS ((int));
 static void s_mips_globl PARAMS ((int));
@@ -716,6 +719,15 @@ static const pseudo_typeS mips_pseudo_table[] =
   {"long", s_cons, 2},
   {"octa", s_cons, 4},
   {"quad", s_cons, 3},
+  /* Support for named sections, used by the Linux kernel (and by the
+     compiler's `section' attribute) when targeting ECOFF.  */
+  {"section", s_mips_section, 0},
+  {"sect", s_mips_section, 0},
+  {"previous", s_mips_previous, 0},
+  /* The kernel emits these everywhere; ECOFF has no equivalent, so
+     just swallow them.  */
+  {"type", s_ignore, 0},
+  {"size", s_ignore, 0},
   {"short", s_cons, 1},
   {"single", s_float_cons, 'f'},
   {"stabn", s_mips_stab, 'n'},
@@ -3390,7 +3402,7 @@ macro (ip)
   int tempreg;
   int mask;
   int icnt = 0;
-  int used_at;
+  int used_at = 0;
   expressionS expr1;
   const char *s;
   const char *s2;
@@ -5886,7 +5898,7 @@ macro2 (ip)
   int tempreg;
   int mask;
   int icnt = 0;
-  int used_at;
+  int used_at = 0;
   expressionS expr1;
   const char *s;
   const char *s2;
@@ -6931,6 +6943,96 @@ validate_mips_insn (opc)
   return 1;
 }
 
+/* Standard MIPS general-purpose register names, indexed by register
+   number.  This toolchain was originally built without the symbolic
+   register names; we add them back so the Linux kernel (and normal GNU
+   assembler input) can be assembled.  */
+
+static const char *const mips_reg_names[32] =
+{
+  "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3",
+  "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
+  "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7",
+  "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"
+};
+
+/* Try to parse a general purpose register operand at *SPP.  Accepts
+   both the symbolic name (with or without a leading `$') and a numeric
+   register ($0..$31 or bare 0..31).  On success stores the register
+   number in *REGNO and advances *SPP past the name, returning 1.
+   Otherwise returns 0 without modifying *SPP.  */
+
+static int
+mips_reg_lookup (spp, regno)
+     char **spp;
+     int *regno;
+{
+  char *s = *spp;
+  char buf[8];
+  int n = 0;
+  int i;
+
+  if (*s != '$')
+    return 0;
+  ++s;
+
+  if (isdigit ((unsigned char) *s))
+    {
+      int reg = 0;
+      do
+	{
+	  reg = reg * 10 + (*s - '0');
+	  ++s;
+	}
+      while (isdigit ((unsigned char) *s));
+      if (reg > 31)
+	{
+	  as_bad (_("Invalid register number (%d)"), reg);
+	  reg = 0;
+	}
+      *regno = reg;
+      *spp = s;
+      return 1;
+    }
+
+  while (n < 7 && (isalnum ((unsigned char) *s) || *s == '_'))
+    {
+      buf[n] = *s;
+      ++n;
+      ++s;
+    }
+  if (n == 0)
+    return 0;
+  buf[n] = '\0';
+
+  for (i = 0; i < 32; ++i)
+    if (strcmp (buf, mips_reg_names[i]) == 0)
+      {
+	*regno = i;
+	*spp = s;
+	return 1;
+      }
+
+  /* Alternate names.  */
+  if (strcmp (buf, "s8") == 0)
+    { *regno = 30; *spp = s; return 1; }
+  if (strcmp (buf, "r0") == 0)
+    { *regno = 0; *spp = s; return 1; }
+  if (strcmp (buf, "kt0") == 0)
+    { *regno = 26; *spp = s; return 1; }
+  if (strcmp (buf, "kt1") == 0)
+    { *regno = 27; *spp = s; return 1; }
+  if (n == 2 && buf[0] == 'r' && isdigit ((unsigned char) buf[1]))
+    {
+      int reg = buf[1] - '0';
+      *regno = reg;
+      *spp = s;
+      return 1;
+    }
+
+  return 0;
+}
+
 /* This routine assembles an instruction into its binary format.  As a
    side effect, it sets one of the global variables imm_reloc or
    offset_reloc to the type of relocation to do if one of the operands
@@ -6950,7 +7052,6 @@ mips_ip (str, ip)
   unsigned int lastregno = 0;
   char *s_reset;
   char save_c = 0;
-  int full_opcode_match = 1;
 
   insn_error = NULL;
 
@@ -6998,8 +7099,6 @@ mips_ip (str, ip)
 	  insn_error = "unrecognized opcode";
 	  return;
 	}
-
-      full_opcode_match = 0;
     }
 
   argsStart = s;
@@ -7244,84 +7343,38 @@ mips_ip (str, ip)
 	    case 'x':		/* ignore register name */
 	    case 'z':		/* must be zero register */
 	      s_reset = s;
-	      if (s[0] == '$')
+	      if (mips_reg_lookup (&s, &regno))
 		{
+		  /* Got a general purpose register.  */
+		}
+	      else if (*args == 'E' || *args == 'G')
+		goto notreg;
+	      else if (s[0] == '$' && itbl_have_entries)
+		{
+		  char *p, *n;
+		  unsigned long r;
 
-		  if (isdigit ((unsigned char) s[1]))
+		  p = s + 1; 	/* advance past '$' */
+		  n = itbl_get_field (&p);  /* n is name */
+
+		  /* See if this is a register defined in an
+		     itbl entry.  */
+		  if (itbl_get_reg_val (n, &r))
 		    {
-		      ++s;
-		      regno = 0;
-		      do
-			{
-			  regno *= 10;
-			  regno += *s - '0';
-			  ++s;
-			}
-		      while (isdigit ((unsigned char) *s));
-		      if (regno > 31)
-			as_bad (_("Invalid register number (%d)"), regno);
-		    }
-		  else if (*args == 'E' || *args == 'G')
-		    goto notreg;
-		  else
-		    {
-		      if (s[1] == 'f' && s[2] == 'p')
-			{
-			  s += 3;
-			  regno = FP;
-			}
-		      else if (s[1] == 's' && s[2] == 'p')
-			{
-			  s += 3;
-			  regno = SP;
-			}
-		      else if (s[1] == 'g' && s[2] == 'p')
-			{
-			  s += 3;
-			  regno = GP;
-			}
-		      else if (s[1] == 'a' && s[2] == 't')
-			{
-			  s += 3;
-			  regno = AT;
-			}
-		      else if (s[1] == 'k' && s[2] == 't' && s[3] == '0')
-			{
-			  s += 4;
-			  regno = KT0;
-			}
-		      else if (s[1] == 'k' && s[2] == 't' && s[3] == '1')
-			{
-			  s += 4;
-			  regno = KT1;
-			}
-		      else if (itbl_have_entries)
-			{
-			  char *p, *n;
-			  unsigned long r;
-
-			  p = s + 1; 	/* advance past '$' */
-			  n = itbl_get_field (&p);  /* n is name */
-
-			  /* See if this is a register defined in an
-			     itbl entry.  */
-			  if (itbl_get_reg_val (n, &r))
-			    {
-			      /* Get_field advances to the start of
-				 the next field, so we need to back
-				 rack to the end of the last field.  */
-			      if (p) 
-				s = p - 1;
-			      else 
-				s = strchr (s, '\0');
-			      regno = r;
-			    }
-			  else
-			    goto notreg;
-			  }
+		      /* Get_field advances to the start of
+			 the next field, so we need to back
+			 rack to the end of the last field.  */
+		      if (p)
+			s = p - 1;
 		      else
-			goto notreg;
+			s = strchr (s, '\0');
+		      regno = r;
 		    }
+		  else
+		    goto notreg;
+		}
+	      else
+		goto notreg;
 		  if (regno == AT
 		      && ! mips_opts.noat
 		      && *args != 'E'
@@ -7385,7 +7438,7 @@ mips_ip (str, ip)
 		    }
 		  lastregno = regno;
 		  continue;
-		}
+
 	    notreg:
 	      switch (*args++)
 		{
@@ -9543,7 +9596,7 @@ md_apply_fix (fixP, valueP)
       buf = (unsigned char *) fixP->fx_frag->fr_literal + fixP->fx_where;
       if (target_big_endian)
 	buf += 2;
-      md_number_to_chars (buf, value, 2);
+      md_number_to_chars ((char *) buf, value, 2);
       break;
 
     case BFD_RELOC_PCREL_LO16:
@@ -9554,7 +9607,7 @@ md_apply_fix (fixP, valueP)
       buf = (unsigned char *) fixP->fx_frag->fr_literal + fixP->fx_where;
       if (target_big_endian)
 	buf += 2;
-      md_number_to_chars (buf, value, 2);
+      md_number_to_chars ((char *) buf, value, 2);
       break;
 
     case BFD_RELOC_64:
@@ -9618,7 +9671,7 @@ md_apply_fix (fixP, valueP)
 	  buf = (unsigned char *) fixP->fx_frag->fr_literal + fixP->fx_where;
 	  if (target_big_endian)
 	    buf += 2;
-	  md_number_to_chars (buf, value, 2);
+	  md_number_to_chars ((char *) buf, value, 2);
 	}
       break;
 
@@ -9882,6 +9935,131 @@ mips_flush_pending_output ()
   mips_clear_insn_labels ();
 }
 
+/* `.section'/`.previous' support for ECOFF.  The object format has no
+   native directives for this, but the kernel needs named sections
+   (exception tables, init sections, ...), so we implement a simple
+   one-level section stack here.  */
+
+static segT mips_previous_section;
+static subsegT mips_previous_subsection;
+
+void
+mips_section_change_hook ()
+{
+  mips_previous_section = now_seg;
+  mips_previous_subsection = now_subseg;
+}
+
+static void
+s_mips_section (ignore)
+     int ignore;
+{
+  char *section_name;
+  char c;
+  char *name;
+  unsigned int exp;
+  flagword flags;
+  segT sec;
+
+  mips_emit_delays (false);
+
+  section_name = input_line_pointer;
+  c = get_symbol_end ();
+
+  name = xmalloc (input_line_pointer - section_name + 1);
+  strcpy (name, section_name);
+
+  *input_line_pointer = c;
+
+  SKIP_WHITESPACE ();
+
+  exp = 0;
+  flags = SEC_LOAD;
+
+  if (*input_line_pointer == ',')
+    {
+      ++input_line_pointer;
+      SKIP_WHITESPACE ();
+      if (*input_line_pointer != '"')
+	exp = get_absolute_expression ();
+      else
+	{
+	  ++input_line_pointer;
+	  while (*input_line_pointer != '"'
+		 && ! is_end_of_line[(unsigned char) *input_line_pointer])
+	    {
+	      if (*input_line_pointer == '@')
+		{
+		  /* Skip an ELF style section type (@progbits, ...).  */
+		  while (*input_line_pointer != ','
+			 && ! is_end_of_line[(unsigned char)
+					     *input_line_pointer])
+		    ++input_line_pointer;
+		  continue;
+		}
+	      switch (*input_line_pointer)
+		{
+		case 'b': flags |= SEC_ALLOC; flags &= ~SEC_LOAD; break;
+		case 'n': flags &= ~SEC_LOAD; break;
+		case 'd': flags |= SEC_DATA | SEC_LOAD; /* fall through */
+		case 'w': flags &= ~SEC_READONLY; break;
+		case 'x': flags |= SEC_CODE | SEC_LOAD; break;
+		case 'r': flags |= SEC_READONLY; break;
+		case 'a': flags |= SEC_ALLOC; break;
+		case 's': flags |= SEC_SHARED; break;
+		case 'i': case 'l': case 'o':
+		  as_warn (_("unsupported section attribute '%c'"),
+			   *input_line_pointer);
+		  break;
+		default:
+		  as_warn (_("unknown section attribute '%c'"),
+			   *input_line_pointer);
+		  break;
+		}
+	      ++input_line_pointer;
+	    }
+	  if (*input_line_pointer == '"')
+	    ++input_line_pointer;
+	}
+    }
+
+  mips_section_change_hook ();
+
+  sec = subseg_new (name, (subsegT) exp);
+
+  if (flags != SEC_NO_FLAGS)
+    {
+      flagword oldflags;
+
+      oldflags = bfd_get_section_flags (stdoutput, sec);
+      oldflags &= SEC_LINK_ONCE | SEC_LINK_DUPLICATES;
+      flags |= oldflags;
+
+      if (! bfd_set_section_flags (stdoutput, sec, flags))
+	as_warn (_("error setting flags for \"%s\": %s"),
+		 bfd_section_name (stdoutput, sec),
+		 bfd_errmsg (bfd_get_error ()));
+    }
+
+  free (name);
+  demand_empty_rest_of_line ();
+}
+
+static void
+s_mips_previous (ignore)
+     int ignore;
+{
+  if (mips_previous_section == NULL)
+    {
+      as_bad (_(".previous without corresponding .section; ignored"));
+      return;
+    }
+
+  mips_emit_delays (false);
+  subseg_set (mips_previous_section, mips_previous_subsection);
+  mips_previous_section = NULL;
+}
+
 static void
 s_change_sec (sec)
      int sec;
@@ -9903,6 +10081,10 @@ s_change_sec (sec)
      functions in read.c, since obj-elf.c intercepts those.  FIXME:
      This should be cleaner, somehow.  */
   obj_elf_section_change_hook ();
+#else
+  /* Same thing for ECOFF: remember the old section so that
+     `.previous' can switch back to it.  */
+  mips_section_change_hook ();
 #endif
 
   mips_emit_delays (false);
@@ -10508,36 +10690,10 @@ tc_get_register (frame)
   int reg;
 
   SKIP_WHITESPACE ();
-  if (*input_line_pointer++ != '$')
+  if (! mips_reg_lookup (&input_line_pointer, &reg))
     {
-      as_warn (_("expected `$'"));
+      as_warn (_("Unrecognized register name"));
       reg = 0;
-    }
-  else if (isdigit ((unsigned char) *input_line_pointer))
-    {
-      reg = get_absolute_expression ();
-      if (reg < 0 || reg >= 32)
-	{
-	  as_warn (_("Bad register number"));
-	  reg = 0;
-	}
-    }
-  else
-    {
-      if (strncmp (input_line_pointer, "fp", 2) == 0)
-	reg = FP;
-      else if (strncmp (input_line_pointer, "sp", 2) == 0)
-	reg = SP;
-      else if (strncmp (input_line_pointer, "gp", 2) == 0)
-	reg = GP;
-      else if (strncmp (input_line_pointer, "at", 2) == 0)
-	reg = AT;
-      else
-	{
-	  as_warn (_("Unrecognized register name"));
-	  reg = 0;
-	}
-      input_line_pointer += 2;
     }
   if (frame)
     mips_frame_reg = reg != 0 ? reg : SP;
@@ -10863,7 +11019,7 @@ md_estimate_size_before_relax (fragp, segtype)
      fragS *fragp;
      asection *segtype;
 {
-  int change;
+  int change = 0;
 
   if (RELAX_MIPS16_P (fragp->fr_subtype))
     {
@@ -11293,12 +11449,12 @@ md_convert_frag (abfd, asec, fragp)
 
       if (use_extend)
 	{
-	  md_number_to_chars (buf, 0xf000 | extend, 2);
+	  md_number_to_chars ((char *) buf, 0xf000 | extend, 2);
 	  fragp->fr_fix += 2;
 	  buf += 2;
 	}
 
-      md_number_to_chars (buf, insn, 2);
+      md_number_to_chars ((char *) buf, insn, 2);
       fragp->fr_fix += 2;
       buf += 2;
     }
@@ -11530,9 +11686,7 @@ static void
 s_file (x)
      int x;
 {
-  int line;
-
-  line = get_number ();
+  (void) get_number ();
   s_app_file (0);
 }
 
@@ -11633,7 +11787,6 @@ static void
 s_mips_ent (aent)
      int aent;
 {
-  int number = 0;
   symbolS *symbolP;
   int maybe_text;
 
@@ -11643,7 +11796,7 @@ s_mips_ent (aent)
   SKIP_WHITESPACE ();
   if (isdigit ((unsigned char) *input_line_pointer)
       || *input_line_pointer == '-')
-    number = get_number ();
+    (void) get_number ();
 
 #ifdef BFD_ASSEMBLER
   if ((bfd_get_section_flags (stdoutput, now_seg) & SEC_CODE) != 0)
