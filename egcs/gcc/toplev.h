@@ -5,6 +5,8 @@
 #ifndef __GCC_TOPLEV_H__
 #define __GCC_TOPLEV_H__
 
+#include <setjmp.h>
+
 #ifdef __STDC__
 union tree_node;
 struct rtx_def;
@@ -51,9 +53,7 @@ extern void error_for_asm		PVPROTO((struct rtx_def *, char *, ...))
 						ATTRIBUTE_PRINTF_2;
 extern void warning_for_asm		PVPROTO((struct rtx_def *, char *, ...))
 						ATTRIBUTE_PRINTF_2;
-#ifdef _JBLEN
 extern void set_float_handler PROTO((jmp_buf));
-#endif
 
 #ifdef BUFSIZ
 extern void output_quoted_string	PROTO ((FILE *, char *));
