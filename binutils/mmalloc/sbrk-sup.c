@@ -20,11 +20,11 @@ not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include <string.h>	/* Prototypes for memcpy, memmove, memset, etc */
+#include <unistd.h>	/* Prototypes for sbrk */
 
 #include "mmprivate.h"
 
 static PTR sbrk_morecore PARAMS ((struct mdesc *, int));
-extern PTR sbrk PARAMS ((int));
 
 /* The mmalloc() package can use a single implicit malloc descriptor
    for mmalloc/mrealloc/mfree operations which do not supply an explicit
