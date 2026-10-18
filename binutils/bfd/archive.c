@@ -133,6 +133,25 @@ DESCRIPTION
 #include "aout/ranlib.h"
 #include <ctype.h>
 
+/* Format VALUE into a fixed size archive header field, eg hdr->ar_date.
+   Archive header fields are not NUL terminated and a value longer than
+   the field is truncated, so format into a scratch buffer and copy at
+   most the size of the field (rather than using sprintf directly into
+   the field, which can overflow it).  */
+
+#define AR_HEADER_SPRINTF(field, fmt, value)			\
+  do								\
+    {								\
+      char ar_hdr_buf[64];					\
+      size_t ar_hdr_len;					\
+      sprintf (ar_hdr_buf, fmt, value);				\
+      ar_hdr_len = strlen (ar_hdr_buf);				\
+      if (ar_hdr_len > sizeof (field))				\
+	ar_hdr_len = sizeof (field);				\
+      memcpy ((field), ar_hdr_buf, ar_hdr_len);			\
+    }								\
+  while (0)
+
 #ifndef errno
 extern int errno;
 #endif
@@ -680,10 +699,7 @@ bfd_generic_archive_p (abfd)
       first = bfd_openr_next_archived_file (abfd, (bfd *) NULL);
       if (first != NULL)
 	{
-	  boolean fail;
-
 	  first->target_defaulted = false;
-	  fail = false;
 	  if (bfd_check_format (first, bfd_object)
 	      && first->xvec != abfd->xvec)
 	    {
@@ -1389,14 +1405,14 @@ bfd_ar_hdr_from_filesystem (abfd, filename, member)
   /* ar headers are space padded, not null padded! */
   memset ((PTR) hdr, ' ', sizeof (struct ar_hdr));
 
-  strncpy (hdr->ar_fmag, ARFMAG, 2);
+  memcpy (hdr->ar_fmag, ARFMAG, 2);
 
   /* Goddamned sprintf doesn't permit MAXIMUM field lengths */
-  sprintf ((hdr->ar_date), "%-12ld", (long) status.st_mtime);
-  sprintf ((hdr->ar_uid), "%ld", (long) status.st_uid);
-  sprintf ((hdr->ar_gid), "%ld", (long) status.st_gid);
-  sprintf ((hdr->ar_mode), "%-8o", (unsigned int) status.st_mode);
-  sprintf ((hdr->ar_size), "%-10ld", (long) status.st_size);
+  AR_HEADER_SPRINTF (hdr->ar_date, "%-12ld", (long) status.st_mtime);
+  AR_HEADER_SPRINTF (hdr->ar_uid, "%ld", (long) status.st_uid);
+  AR_HEADER_SPRINTF (hdr->ar_gid, "%ld", (long) status.st_gid);
+  AR_HEADER_SPRINTF (hdr->ar_mode, "%-8o", (unsigned int) status.st_mode);
+  AR_HEADER_SPRINTF (hdr->ar_size, "%-10ld", (long) status.st_size);
   /* Correct for a lossage in sprintf whereby it null-terminates.  I cannot
      understand how these C losers could design such a ramshackle bunch of
      IO operations */
@@ -1407,7 +1423,7 @@ bfd_ar_hdr_from_filesystem (abfd, filename, member)
       if (*temp == '\0')
 	*temp = ' ';
     }
-  strncpy (hdr->ar_fmag, ARFMAG, 2);
+  memcpy (hdr->ar_fmag, ARFMAG, 2);
   ared->parsed_size = status.st_size;
   ared->arch_header = (char *) hdr;
 
@@ -1656,9 +1672,9 @@ _bfd_write_archive_contents (arch)
       memset ((char *) (&hdr), 0, sizeof (struct ar_hdr));
       strcpy (hdr.ar_name, ename);
       /* Round size up to even number in archive header.  */
-      sprintf (&(hdr.ar_size[0]), "%-10d",
-	       (int) ((elength + 1) & ~1));
-      strncpy (hdr.ar_fmag, ARFMAG, 2);
+      AR_HEADER_SPRINTF (hdr.ar_size, "%-10d",
+			 (int) ((elength + 1) & ~1));
+      memcpy (hdr.ar_fmag, ARFMAG, 2);
       for (i = 0; i < sizeof (struct ar_hdr); i++)
 	if (((char *) (&hdr))[i] == '\0')
 	  (((char *) (&hdr))[i]) = ' ';
@@ -1908,11 +1924,11 @@ bsd_write_armap (arch, elength, map, orl_count, stridx)
   bfd_ardata (arch)->armap_timestamp = statbuf.st_mtime + ARMAP_TIME_OFFSET;
   bfd_ardata (arch)->armap_datepos = (SARMAG
 				      + offsetof (struct ar_hdr, ar_date[0]));
-  sprintf (hdr.ar_date, "%ld", bfd_ardata (arch)->armap_timestamp);
-  sprintf (hdr.ar_uid, "%ld", (long) getuid ());
-  sprintf (hdr.ar_gid, "%ld", (long) getgid ());
-  sprintf (hdr.ar_size, "%-10d", (int) mapsize);
-  strncpy (hdr.ar_fmag, ARFMAG, 2);
+  AR_HEADER_SPRINTF (hdr.ar_date, "%ld", bfd_ardata (arch)->armap_timestamp);
+  AR_HEADER_SPRINTF (hdr.ar_uid, "%ld", (long) getuid ());
+  AR_HEADER_SPRINTF (hdr.ar_gid, "%ld", (long) getgid ());
+  AR_HEADER_SPRINTF (hdr.ar_size, "%-10d", (int) mapsize);
+  memcpy (hdr.ar_fmag, ARFMAG, 2);
   for (i = 0; i < sizeof (struct ar_hdr); i++)
     if (((char *) (&hdr))[i] == '\0')
       (((char *) (&hdr))[i]) = ' ';
@@ -1998,7 +2014,7 @@ _bfd_archive_bsd_update_armap_timestamp (arch)
 
   /* Prepare an ASCII version suitable for writing.  */
   memset (hdr.ar_date, 0, sizeof (hdr.ar_date));
-  sprintf (hdr.ar_date, "%ld", bfd_ardata (arch)->armap_timestamp);
+  AR_HEADER_SPRINTF (hdr.ar_date, "%ld", bfd_ardata (arch)->armap_timestamp);
   for (i = 0; i < sizeof (hdr.ar_date); i++)
     if (hdr.ar_date[i] == '\0')
       (hdr.ar_date)[i] = ' ';
@@ -2063,13 +2079,13 @@ coff_write_armap (arch, elength, map, symbol_count, stridx)
 
   memset ((char *) (&hdr), 0, sizeof (struct ar_hdr));
   hdr.ar_name[0] = '/';
-  sprintf (hdr.ar_size, "%-10d", (int) mapsize);
-  sprintf (hdr.ar_date, "%ld", (long) time (NULL));
+  AR_HEADER_SPRINTF (hdr.ar_size, "%-10d", (int) mapsize);
+  AR_HEADER_SPRINTF (hdr.ar_date, "%ld", (long) time (NULL));
   /* This, at least, is what Intel coff sets the values to.: */
-  sprintf ((hdr.ar_uid), "%d", 0);
-  sprintf ((hdr.ar_gid), "%d", 0);
-  sprintf ((hdr.ar_mode), "%-7o", (unsigned) 0);
-  strncpy (hdr.ar_fmag, ARFMAG, 2);
+  AR_HEADER_SPRINTF (hdr.ar_uid, "%d", 0);
+  AR_HEADER_SPRINTF (hdr.ar_gid, "%d", 0);
+  AR_HEADER_SPRINTF (hdr.ar_mode, "%-7o", (unsigned) 0);
+  memcpy (hdr.ar_fmag, ARFMAG, 2);
 
   for (i = 0; i < sizeof (struct ar_hdr); i++)
     if (((char *) (&hdr))[i] == '\0')
