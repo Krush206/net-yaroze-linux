@@ -1168,7 +1168,7 @@ reload (first, global, dumpfile)
 		  enum reg_class class = reload_reg_class[i];
 		  int size;
 		  enum machine_mode mode;
-		  struct needs *this_needs;
+		  struct needs *this_needs = 0;
 
 		  /* Don't count the dummy reloads, for which one of the
 		     regs mentioned in the insn can be used for reloading.
@@ -1272,10 +1272,10 @@ reload (first, global, dumpfile)
 		    }
 		  else if (size == 1)
 		    {
-		      this_needs->regs[reload_nongroup[i]][(int) class] += 1;
+		      this_needs->regs[(unsigned char) reload_nongroup[i]][(int) class] += 1;
 		      p = reg_class_superclasses[(int) class];
 		      while (*p != LIM_REG_CLASSES)
-			this_needs->regs[reload_nongroup[i]][(int) *p++] += 1;
+			this_needs->regs[(unsigned char) reload_nongroup[i]][(int) *p++] += 1;
 		    }
 		  else
 		    abort ();
@@ -5949,7 +5949,6 @@ choose_reload_regs (insn, avoid_return_reg)
       if (j == n_reloads)
 	break;
 
-    fail:
       /* Loop around and try without any inheritance.  */
       /* First undo everything done by the failed attempt
 	 to allocate with inheritance.  */
@@ -6279,8 +6278,10 @@ emit_reload_insns (insn)
   for (j = 0; j < n_reloads; j++)
     {
       register rtx old;
+#ifdef PRESERVE_DEATH_INFO_REGNO_P
       rtx oldequiv_reg = 0;
       rtx this_reload_insn = 0;
+#endif
       int expect_occurrences = 1;
 
       if (reload_spill_index[j] >= 0)
@@ -6418,10 +6419,12 @@ emit_reload_insns (insn)
 
 	  if (oldequiv == 0)
 	    oldequiv = old;
+#ifdef PRESERVE_DEATH_INFO_REGNO_P
 	  else if (GET_CODE (oldequiv) == REG)
 	    oldequiv_reg = oldequiv;
 	  else if (GET_CODE (oldequiv) == SUBREG)
 	    oldequiv_reg = SUBREG_REG (oldequiv);
+#endif
 
 	  /* If we are reloading from a register that was recently stored in
 	     with an output-reload, see if we can prove there was
@@ -6708,7 +6711,9 @@ emit_reload_insns (insn)
 #endif
 	    }
 
+#ifdef PRESERVE_DEATH_INFO_REGNO_P
 	  this_reload_insn = get_last_insn ();
+#endif
 	  /* End this sequence.  */
 	  *where = get_insns ();
 	  end_sequence ();
@@ -8656,6 +8661,7 @@ reload_cse_simplify_operands (insn)
   alternative_order = (int *) alloca (n_alternatives * sizeof (int));
   bzero ((char *)alternative_reject, n_alternatives * sizeof (int));
   bzero ((char *)alternative_nregs, n_alternatives * sizeof (int));
+  bzero ((char *)alternative_order, n_alternatives * sizeof (int));
 
   for (i = 0; i < n_operands; i++)
     {
