@@ -2649,8 +2649,8 @@ schedule_block (b, file)
   rtx prev_head;
 
   /* Keep life information accurate.  */
-  register struct sometimes *regs_sometimes_live;
-  int sometimes_max;
+  register struct sometimes *regs_sometimes_live = 0;
+  int sometimes_max = 0;
 
   if (file)
     fprintf (file, ";;\t -- basic block number %d from %d to %d --\n",
@@ -4380,7 +4380,6 @@ schedule_insns (dump_file)
 
       for (insn = basic_block_head[b]; ; insn = next)
 	{
-	  rtx prev;
 	  rtx set;
 
 	  /* Can't use `next_real_insn' because that
@@ -4418,7 +4417,6 @@ schedule_insns (dump_file)
 	    }
 
 	  /* Split insns here to get max fine-grain parallelism.  */
-	  prev = PREV_INSN (insn);
 	  /* It is probably not worthwhile to try to split again in the
 	     second pass.  However, if flag_schedule_insns is not set,
 	     the first and only (if any) scheduling pass is after reload.  */
