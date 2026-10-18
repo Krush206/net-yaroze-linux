@@ -510,7 +510,7 @@ rtx_equal_for_memref_p (x, y)
 /* Given an rtx X, find a SYMBOL_REF or LABEL_REF within
    X and return it, or return 0 if none found.  */
 
-static rtx
+static rtx ATTRIBUTE_UNUSED
 find_symbolic_term (x)
      rtx x;
 {
