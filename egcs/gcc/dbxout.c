@@ -2570,7 +2570,7 @@ dbxout_block (block, depth, args)
      int depth;
      tree args;
 {
-  int blocknum;
+  int blocknum = 0;
 
   while (block)
     {
