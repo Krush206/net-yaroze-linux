@@ -29,6 +29,9 @@ Boston, MA 02111-1307, USA.  */
 
 #include "system.h"
 
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 #ifdef IN_GCC
 #include "gansidecl.h"
 /* ??? Need to find a suitable header file.  */
