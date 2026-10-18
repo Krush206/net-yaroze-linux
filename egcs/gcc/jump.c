@@ -2682,7 +2682,9 @@ find_cross_jump (e1, e2, minimum, f1, f2)
   int lose = 0;
 
   rtx last1 = 0, last2 = 0;
+#ifdef HAVE_cc0
   rtx afterlast1 = 0, afterlast2 = 0;
+#endif
 
   *f1 = 0;
   *f2 = 0;
@@ -2846,7 +2848,9 @@ find_cross_jump (e1, e2, minimum, f1, f2)
       if (GET_CODE (p1) != USE && GET_CODE (p1) != CLOBBER)
 	{
 	  /* Ok, this insn is potentially includable in a cross-jump here.  */
+#ifdef HAVE_cc0
 	  afterlast1 = last1, afterlast2 = last2;
+#endif
 	  last1 = i1, last2 = i2, --minimum;
 	}
     }
