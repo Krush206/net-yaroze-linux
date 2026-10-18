@@ -1855,7 +1855,7 @@ extern enum reg_class mips_regno_to_class[];
 
 extern enum reg_class mips_char_to_class[];
 
-#define REG_CLASS_FROM_LETTER(C) mips_char_to_class[ (C) ]
+#define REG_CLASS_FROM_LETTER(C) mips_char_to_class[(unsigned char) (C)]
 
 /* The letters I, J, K, L, M, N, O, and P in a register constraint
    string can be used to stand for particular ranges of immediate
@@ -3006,7 +3006,8 @@ typedef struct mips_args {
 
    You may assume that ADDR is a valid address for the machine.  */
 
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL) {}
+#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL) \
+  do { (void) (ADDR); if (0) goto LABEL; } while (0)
 
 
 /* Define this macro if references to a symbol must be treated
@@ -3918,7 +3919,7 @@ while (0)
    punctuation characters (except for the standard one, `%') are
    used in this way.  */
 
-#define PRINT_OPERAND_PUNCT_VALID_P(CODE) mips_print_operand_punct[CODE]
+#define PRINT_OPERAND_PUNCT_VALID_P(CODE) mips_print_operand_punct[(unsigned char) (CODE)]
 
 /* A C compound statement to output to stdio stream STREAM the
    assembler syntax for an instruction operand that is a memory
@@ -4245,7 +4246,7 @@ do {									\
 /* This is how to output a string.  */
 #define ASM_OUTPUT_ASCII(STREAM, STRING, LEN)				\
 do {									\
-  register int i, c, len = (LEN), cur_pos = 17;				\
+  register int i, len = (LEN), cur_pos = 17;				\
   register unsigned char *string = (unsigned char *)(STRING);		\
   fprintf ((STREAM), "\t.ascii\t\"");					\
   for (i = 0; i < len; i++)						\
