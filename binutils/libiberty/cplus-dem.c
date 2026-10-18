@@ -1562,7 +1562,6 @@ demangle_template (work, mangled, tname, trawname, is_type, remember)
   int r;
   int need_comma = 0;
   int success = 0;
-  const char *start;
   int is_java_array = 0;
   string temp;
   int bindex = 0;
@@ -1572,7 +1571,6 @@ demangle_template (work, mangled, tname, trawname, is_type, remember)
     {
       if (remember)
 	bindex = register_Btype (work);
-      start = *mangled;
       /* get template name */
       if (**mangled == 'z')
 	{
