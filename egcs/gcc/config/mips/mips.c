@@ -5646,7 +5646,7 @@ save_restore_insns (store_p, large_reg, large_offset, file)
   long fmask = current_frame_info.fmask;
   int regno;
   rtx base_reg_rtx;
-  HOST_WIDE_INT base_offset;
+  HOST_WIDE_INT base_offset = 0;
   HOST_WIDE_INT gp_offset;
   HOST_WIDE_INT fp_offset;
   HOST_WIDE_INT end_offset;
@@ -5760,7 +5760,7 @@ save_restore_insns (store_p, large_reg, large_offset, file)
 	  else
 	    {
 	      fprintf (file, "\tli\t%s,0x%.08lx\t# ",
-		       reg_names[MIPS_TEMP2_REGNUM], base_offset);
+		       reg_names[MIPS_TEMP2_REGNUM], (unsigned long) base_offset);
 	      fprintf (file, HOST_WIDE_INT_PRINT_DEC, base_offset);
 	      fprintf (file, "\n\t%s\t%s,%s,%s\n",
 		       Pmode == DImode ? "daddu" : "addu",
@@ -5977,7 +5977,7 @@ save_restore_insns (store_p, large_reg, large_offset, file)
 	  else
 	    {
 	      fprintf (file, "\tli\t%s,0x%.08lx\t# ",
-		       reg_names[MIPS_TEMP2_REGNUM], base_offset);
+		       reg_names[MIPS_TEMP2_REGNUM], (unsigned long) base_offset);
 	      fprintf (file, HOST_WIDE_INT_PRINT_DEC, base_offset);
 	      fprintf (file, "\n\t%s\t%s,%s,%s\n",
 		       Pmode == DImode ? "daddu" : "addu",
