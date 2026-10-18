@@ -2085,8 +2085,6 @@ pushdecl (x)
 
   if (name)
     {
-      char *file;
-      int line;
       int different_binding_level = 0;
 
       t = lookup_name_current_level (name);
@@ -2107,12 +2105,6 @@ pushdecl (x)
 	{
 	  t = 0;
 	  error_with_decl (x, "`%s' used prior to declaration");
-	}
-
-      if (t != 0)
-	{
-	  file = DECL_SOURCE_FILE (t);
-	  line = DECL_SOURCE_LINE (t);
 	}
 
       /* If this decl is `static' and an implicit decl was seen previously,
@@ -2947,7 +2939,6 @@ init_decl_processing ()
   /* Data types of memcpy and strlen.  */
   tree memcpy_ftype, memset_ftype, strlen_ftype;
   tree void_ftype_any, ptr_ftype_void, ptr_ftype_ptr;
-  int wchar_type_size;
   tree temp;
   tree array_domain_type;
 
@@ -3103,7 +3094,6 @@ init_decl_processing ()
 
   wchar_type_node
     = TREE_TYPE (IDENTIFIER_GLOBAL_VALUE (get_identifier (WCHAR_TYPE)));
-  wchar_type_size = TYPE_PRECISION (wchar_type_node);
   signed_wchar_type_node = signed_type (wchar_type_node);
   unsigned_wchar_type_node = unsigned_type (wchar_type_node);
 
