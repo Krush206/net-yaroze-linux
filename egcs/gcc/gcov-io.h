@@ -102,7 +102,7 @@ __fetch_long (dest, source, bytes)
 
    BYTES may be a maximum of 10. */
 
-static int
+static int __attribute__ ((__unused__))
 __write_long (value, file, bytes)
      long value;
      FILE *file;
