@@ -7469,6 +7469,10 @@ for machine in $build $host $target; do
 		;;
 	mips-*-gnu*)
 		;;
+	mipsel-*-linux*)
+		tm_file="mips/linuxl.h"
+		tmake_file=mips/t-ecoff
+		;;
 	mipsel-*-ecoff*)
 		tm_file=mips/ecoffl.h
 		if [ x$stabs = xyes ]; then
