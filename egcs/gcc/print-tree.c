@@ -566,7 +566,7 @@ print_node (file, prefix, node, indent)
 	    }
 	  else
 	    {
-	      char temp[10];
+	      char temp[20];
 
 	      sprintf (temp, "arg %d", i);
 	      print_node (file, temp, TREE_OPERAND (node, i), indent + 4);
@@ -669,7 +669,7 @@ print_node (file, prefix, node, indent)
 	  for (i = 0; i < len; i++)
 	    if (TREE_VEC_ELT (node, i))
 	      {
-		char temp[10];
+		char temp[20];
 		sprintf (temp, "elt %d", i);
 		indent_to (file, indent + 4);
 		print_node_brief (file, temp, TREE_VEC_ELT (node, i), 0);
