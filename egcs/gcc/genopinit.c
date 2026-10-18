@@ -136,7 +136,7 @@ gen_insn (insn)
      rtx insn;
 {
   char *name = XSTR (insn, 0);
-  int m1, m2, op;
+  int m1 = 0, m2 = 0, op = 0;
   size_t pindex;
   int i;
   char *np, *pp, *p, *q;
