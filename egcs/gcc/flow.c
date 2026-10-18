@@ -1567,11 +1567,11 @@ propagate_block (old, first, last, final, significant, bnum)
   /* This vector gets one element for each reg that has been live
      at any point in the basic block that has been scanned so far.
      SOMETIMES_MAX says how many elements are in use so far.  */
-  register int *regs_sometimes_live;
+  register int *regs_sometimes_live = 0;
   int sometimes_max = 0;
   /* This regset has 1 for each reg that we have seen live so far.
      It and REGS_SOMETIMES_LIVE are updated together.  */
-  regset maxlive;
+  regset maxlive = 0;
 
   /* The loop depth may change in the middle of a basic block.  Since we
      scan from end to beginning, we start with the depth at the end of the
@@ -4064,8 +4064,6 @@ count_reg_references (x)
      rtx x;
 {
   register RTX_CODE code;
-  register int regno;
-  int i;
 
  retry:
   code = GET_CODE (x);
