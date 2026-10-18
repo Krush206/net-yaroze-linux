@@ -241,7 +241,7 @@ unroll_loop (loop_end, insn_count, loop_start, end_insert_before,
   int max_labelno, max_insnno;
   rtx insert_before;
   struct inline_remap *map;
-  char *local_label;
+  char *local_label = 0;
   char *local_regno;
   int maxregnum;
   int new_maxregnum;
@@ -250,7 +250,6 @@ unroll_loop (loop_end, insn_count, loop_start, end_insert_before,
   struct iv_class *bl;
   int splitting_not_safe = 0;
   enum unroll_types unroll_type;
-  int loop_preconditioned = 0;
   rtx safety_label;
   /* This points to the last real insn in the loop, which should be either
      a JUMP_INSN (for conditional jumps) or a BARRIER (for unconditional
@@ -1126,7 +1125,6 @@ unroll_loop (loop_end, insn_count, loop_start, end_insert_before,
 
 	  /* Set unroll type to MODULO now.  */
 	  unroll_type = UNROLL_MODULO;
-	  loop_preconditioned = 1;
 
 #ifdef HAIFA
 	  /* Fix the initial value for the loop as needed.  */
@@ -2115,6 +2113,7 @@ copy_loop_body (copy_start, copy_end, map, exit_label, last_iteration,
 	  /* If this is the loop start label, then we don't need to emit a
 	     copy of this label since no one will use it.  */
 
+	  copy = 0;
 	  if (insn != start_label)
 	    {
 	      copy = emit_label (get_label_from_map (map,
