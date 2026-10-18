@@ -1209,7 +1209,7 @@ s_align (arg, bytes_p)
 {
   register unsigned int align;
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
   offsetT fill = 0;
   int max;
   int fill_p;
@@ -1345,7 +1345,7 @@ s_comm (ignore)
   offsetT temp;
   register symbolS *symbolP;
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
   if (flag_mri)
     stop = mri_comment_field (&stopc);
@@ -1425,9 +1425,11 @@ s_mri_common (small)
   char c;
   char *alc = NULL;
   symbolS *sym;
+#ifdef S_SET_ALIGN
   offsetT align;
+#endif
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
   if (! flag_mri)
     {
@@ -1467,6 +1469,7 @@ s_mri_common (small)
   if (alc != NULL)
     free (alc);
 
+#ifdef S_SET_ALIGN
   if (*input_line_pointer != ',')
     align = 0;
   else
@@ -1474,6 +1477,15 @@ s_mri_common (small)
       ++input_line_pointer;
       align = get_absolute_expression ();
     }
+#else
+  /* The alignment expression is still parsed, but otherwise
+     discarded.  */
+  if (*input_line_pointer == ',')
+    {
+      ++input_line_pointer;
+      get_absolute_expression ();
+    }
+#endif
 
   if (S_IS_DEFINED (sym) && ! S_IS_COMMON (sym))
     {
@@ -1650,7 +1662,7 @@ s_fail (ignore)
 {
   offsetT temp;
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
   if (flag_mri)
     stop = mri_comment_field (&stopc);
@@ -1772,7 +1784,7 @@ s_globl (ignore)
   int c;
   symbolS *symbolP;
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
   if (flag_mri)
     stop = mri_comment_field (&stopc);
@@ -2305,10 +2317,15 @@ void
 s_mri (ignore)
      int ignore ATTRIBUTE_UNUSED;
 {
-  int on, old_flag;
+  int on;
+#ifdef MRI_MODE_CHANGE
+  int old_flag;
+#endif
 
   on = get_absolute_expression ();
+#ifdef MRI_MODE_CHANGE
   old_flag = flag_mri;
+#endif
   if (on != 0)
     {
       flag_mri = 1;
@@ -2761,7 +2778,7 @@ s_space (mult)
   expressionS val;
   char *p = 0;
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
   int bytes;
 
 #ifdef md_flush_pending_output
@@ -2932,7 +2949,7 @@ s_float_space (float_type)
   int flen;
   char temp[MAXIMUM_NUMBER_OF_CHARS_FOR_FLOAT];
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
   if (flag_mri)
     stop = mri_comment_field (&stopc);
@@ -3010,7 +3027,7 @@ s_struct (ignore)
      int ignore ATTRIBUTE_UNUSED;
 {
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
   if (flag_mri)
     stop = mri_comment_field (&stopc);
@@ -3246,7 +3263,7 @@ cons_worker (nbytes, rva)
   int c;
   expressionS exp;
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
 #ifdef md_flush_pending_output
   md_flush_pending_output ();
@@ -4134,11 +4151,9 @@ sizeof_uleb128 (value)
      valueT value;
 {
   register int size = 0;
-  register unsigned byte;
 
   do
     {
-      byte = (value & 0x7f);
       value >>= 7;
       size += 1;
     }
@@ -4420,7 +4435,9 @@ stringer (append_zero)		/* Worker to do .ascii etc statements. */
      register int append_zero;	/* 0: don't append '\0', else 1 */
 {
   register unsigned int c;
+#ifdef OBJ_ELF
   char *start;
+#endif
 
 #ifdef md_flush_pending_output
   md_flush_pending_output ();
@@ -4450,7 +4467,9 @@ stringer (append_zero)		/* Worker to do .ascii etc statements. */
 	{
 	case '\"':
 	  ++input_line_pointer;	/*->1st char of string. */
+#ifdef OBJ_ELF
 	  start = input_line_pointer;
+#endif
 	  while (is_a_char (c = next_char_of_string ()))
 	    {
 	      FRAG_APPEND_1_CHAR (c);
@@ -4787,7 +4806,7 @@ equals (sym_name, reassign)
 {
   register symbolS *symbolP;	/* symbol we are working with */
   char *stop = NULL;
-  char stopc;
+  char stopc = 0;
 
   input_line_pointer++;
   if (*input_line_pointer == '=')
@@ -4834,7 +4853,6 @@ void
 s_include (arg)
      int arg ATTRIBUTE_UNUSED;
 {
-  char *newbuf;
   char *filename;
   int i;
   FILE *try;
@@ -4885,7 +4903,7 @@ s_include (arg)
 gotit:
   /* malloc Storage leak when file is found on path.  FIXME-SOMEDAY. */
   register_dependency (path);
-  newbuf = input_scrub_include_file (path, input_line_pointer);
+  (void) input_scrub_include_file (path, input_line_pointer);
   buffer_limit = input_scrub_next_buffer (&input_line_pointer);
 }				/* s_include() */
 
