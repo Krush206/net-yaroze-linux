@@ -639,7 +639,7 @@ print_stats (total_size)
       j = SPECIAL_LINE (i);
       if (j == DWARF2_LINE_BASE)
 	fprintf (stderr, "\n%4u: ",
-		 DWARF2_LINE_MIN_INSN_LENGTH*SPECIAL_ADDR (i));
+		 (unsigned) (DWARF2_LINE_MIN_INSN_LENGTH*SPECIAL_ADDR (i)));
       fprintf (stderr, " %2u", ls.opcode_hist[i]);
     }
   fprintf (stderr, "\n");
