@@ -812,15 +812,12 @@ static boolean
 tekhex_write_object_contents (abfd)
      bfd *abfd;
 {
-  int bytes_written;
   char buffer[100];
   asymbol **p;
   asection *s;
   struct data_struct *d;
 
   tekhex_init ();
-
-  bytes_written = 0;
 
   /* And the raw data */
   for (d = abfd->tdata.tekhex_data->data;
