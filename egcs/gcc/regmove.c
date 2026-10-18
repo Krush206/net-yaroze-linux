@@ -1454,11 +1454,13 @@ fixup_match_1 (insn, set, src, src_subreg, dst, backward, operand_number,
      FILE *regmove_dump_file;
 {
   rtx p;
-  rtx post_inc = 0, post_inc_set = 0, search_end = 0;
+  rtx post_inc ATTRIBUTE_UNUSED = 0;
+  rtx post_inc_set ATTRIBUTE_UNUSED = 0;
+  rtx search_end ATTRIBUTE_UNUSED = 0;
   int success = 0;
   int num_calls = 0, s_num_calls = 0;
   enum rtx_code code = NOTE;
-  HOST_WIDE_INT insn_const, newconst;
+  HOST_WIDE_INT insn_const = 0, newconst;
   rtx overlap = 0; /* need to move insn ? */
   rtx src_note = find_reg_note (insn, REG_DEAD, src), dst_note;
   int length, s_length, true_loop_depth;
