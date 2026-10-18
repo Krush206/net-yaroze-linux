@@ -579,14 +579,14 @@ expand_call (exp, target, ignore)
 #if defined(ACCUMULATE_OUTGOING_ARGS) && defined(REG_PARM_STACK_SPACE)
   /* Define the boundary of the register parm stack space that needs to be
      save, if any.  */
-  int low_to_save = -1, high_to_save;
+  int low_to_save = -1, high_to_save = 0;
   rtx save_area = 0;		/* Place that it is saved */
 #endif
 
 #ifdef ACCUMULATE_OUTGOING_ARGS
   int initial_highest_arg_in_use = highest_outgoing_arg_in_use;
   char *initial_stack_usage_map = stack_usage_map;
-  int old_stack_arg_under_construction;
+  int old_stack_arg_under_construction = 0;
 #endif
 
   rtx old_stack_level = 0;
@@ -752,7 +752,7 @@ expand_call (exp, target, ignore)
 	    {
 	      rtx first_insn
 		= before_call ? NEXT_INSN (before_call) : get_insns ();
-	      rtx insn, seq;
+	      rtx insn = 0, seq;
 
 	      /* Look for a call in the inline function code.
 		 If OUTGOING_ARGS_SIZE (DECL_SAVED_INSNS (fndecl)) is
@@ -2337,7 +2337,7 @@ emit_library_call VPROTO((rtx orgfun, int no_queue, enum machine_mode outmode,
 #if defined(ACCUMULATE_OUTGOING_ARGS) && defined(REG_PARM_STACK_SPACE)
   /* Define the boundary of the register parm stack space that needs to be
      save, if any.  */
-  int low_to_save = -1, high_to_save;
+  int low_to_save = -1, high_to_save = 0;
   rtx save_area = 0;            /* Place that it is saved */
 #endif
 
@@ -2837,7 +2837,7 @@ emit_library_call_value VPROTO((rtx orgfun, rtx value, int no_queue,
 #if defined(ACCUMULATE_OUTGOING_ARGS) && defined(REG_PARM_STACK_SPACE)
   /* Define the boundary of the register parm stack space that needs to be
      save, if any.  */
-  int low_to_save = -1, high_to_save;
+  int low_to_save = -1, high_to_save = 0;
   rtx save_area = 0;            /* Place that it is saved */
 #endif
 
@@ -3450,7 +3450,7 @@ store_one_arg (arg, argblock, may_be_alloca, variable_size, fndecl,
   int partial = 0;
   int used = 0;
 #ifdef ACCUMULATE_OUTGOING_ARGS
-  int i, lower_bound, upper_bound;
+  int i, lower_bound = 0, upper_bound = 0;
 #endif
 
   if (TREE_CODE (pval) == ERROR_MARK)
