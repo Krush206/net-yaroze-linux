@@ -63,6 +63,7 @@ Boston, MA 02111-1307, USA.  */
 #include <varargs.h>
 #endif
 #include "system.h"
+#include <stdlib.h>
 #include <sys/stat.h>
 #if ! defined (_WIN32) || defined (__CYGWIN32__)
 #if defined(POSIX) || defined(CONCURRENT)
@@ -84,6 +85,17 @@ Boston, MA 02111-1307, USA.  */
 #define strrchr rindex
 #endif
 #endif
+#endif
+
+/* Likewise, some systems (e.g. GNU/Linux when _POSIX_SOURCE is defined
+   above) do not declare isascii or alloca, even though they provide both.  */
+
+#if defined (HAVE_ISASCII) && !defined (isascii)
+extern int isascii ();
+#endif
+
+#if defined (__GNUC__) && !defined (alloca)
+#define alloca __builtin_alloca
 #endif
 
 /* Include getopt.h for the sake of getopt_long.
@@ -4132,7 +4144,9 @@ edit_file (hp)
   char *new_clean_text_limit;
   size_t orig_size;
   size_t repl_size;
+#ifndef UNPROTOIZE
   int first_definition_in_file;
+#endif
 
   /* If we are not supposed to be converting this file, or if there is
      nothing in there which needs converting, just skip this file.  */
@@ -4293,7 +4307,9 @@ edit_file (hp)
   {
     const def_dec_info *def_dec_p;
 
+#ifndef UNPROTOIZE
     first_definition_in_file = 1;
+#endif
     def_dec_p = file_p->defs_decs;
     for (; def_dec_p; def_dec_p = def_dec_p->next_in_file)
       {
