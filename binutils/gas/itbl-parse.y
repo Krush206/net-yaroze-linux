@@ -288,10 +288,12 @@ static int yyerror PARAMS ((const char *));
     unsigned long val;
   }
 
-%token	    DREG CREG GREG IMMED ADDR INSN NUM ID NL PNUM
+%token	    DREG CREG GREG IMMED ADDR INSN NL
+%token	    <num> NUM PNUM
+%token	    <str> ID
 %type	    <val> value flags flagexpr
-%type	    <num> number NUM ftype regtype pnum PNUM
-%type	    <str> ID name
+%type	    <num> ftype regtype pnum
+%type	    <str> name
 
 %start insntbl
 
@@ -430,14 +432,6 @@ name:
 	  {
 	    DBGL2 (("name=%s\n",$1));
 	    $$ = $1; 
-	  }
-	;
-
-number:
-	NUM
-	  {
-	    DBGL2 (("num=%d\n",$1));
-	    $$ = $1;
 	  }
 	;
 
