@@ -24,6 +24,7 @@ Boston, MA 02111-1307, USA.  */
 #include <fcntl.h> /* After sys/types.h, at least for dpx/2.  */
 #include <sys/stat.h>
 #include <string.h>
+#include <unistd.h>
 #include "mmprivate.h"
 
 #ifndef SEEK_SET
