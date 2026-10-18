@@ -39,9 +39,11 @@
    pseudo-op at different times.  */
 static int scrub_m68k_mri;
 
+#ifdef TC_M68K
 /* The pseudo-op which switches in and out of MRI mode.  See the
    comment in do_scrub_chars.  */
 static const char mri_pseudo[] = ".mri 0";
+#endif
 
 #if defined TC_ARM && defined OBJ_ELF
 /* The pseudo-op for which we need to special-case `@' characters. 
@@ -383,9 +385,12 @@ do_scrub_chars (get, tostart, tolen)
        ? EOF							\
        : * (unsigned char *) (from++))))
 
-  /* This macro pushes a character back on the input stream.  */
-
-#define UNGET(uch) (*--from = (uch))
+  /* This macro pushes a character back on the input stream.  If the
+     input has been exhausted (GET refilled the buffer and returned
+     EOF, leaving FROM == input_buffer), the pushed character could
+     never be read again, so do not write it out of bounds below the
+     buffer; simply discard it.  */
+#define UNGET(uch) do { if (from > input_buffer) *--from = (uch); } while (0)
 
   /* This macro puts a character into the output buffer.  If this
      character fills the output buffer, this macro jumps to the label
