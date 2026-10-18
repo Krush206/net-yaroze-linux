@@ -10041,7 +10041,10 @@ s_mips_section (ignore)
 		 bfd_errmsg (bfd_get_error ()));
     }
 
-  free (name);
+  /* NOTE: BFD takes ownership of name via section.s_name; do not free
+     it here.  Freeing leaves every custom section with a dangling name
+     (a heap address), which makes the linker unable to match
+     *(.text.init), *(__ex_table), etc. */
   demand_empty_rest_of_line ();
 }
 
