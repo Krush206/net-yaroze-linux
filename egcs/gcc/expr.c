@@ -3896,7 +3896,6 @@ store_constructor (exp, target, cleared)
 	  register enum machine_mode mode;
 	  int bitsize;
 	  int bitpos = 0;
-	  int unsignedp;
 	  tree pos, constant = 0, offset = 0;
 	  rtx to_rtx = target;
 
@@ -3910,7 +3909,6 @@ store_constructor (exp, target, cleared)
 	    continue;
 
 	  bitsize = TREE_INT_CST_LOW (DECL_SIZE (field));
-	  unsignedp = TREE_UNSIGNED (field);
 	  mode = DECL_MODE (field);
 	  if (DECL_BIT_FIELD (field))
 	    mode = VOIDmode;
@@ -4058,7 +4056,7 @@ store_constructor (exp, target, cleared)
 	    {
 	      tree lo_index = TREE_OPERAND (index, 0);
 	      tree hi_index = TREE_OPERAND (index, 1);
-	      rtx index_r, pos_rtx, addr, hi_r, loop_top, loop_end;
+	      rtx index_r, pos_rtx, addr, loop_end;
 	      struct nesting *loop;
 	      HOST_WIDE_INT lo, hi, count;
 	      tree position;
@@ -4085,8 +4083,6 @@ store_constructor (exp, target, cleared)
 		}
 	      else
 		{
-		  hi_r = expand_expr (hi_index, NULL_RTX, VOIDmode, 0);
-		  loop_top = gen_label_rtx ();
 		  loop_end = gen_label_rtx ();
 
 		  unsignedp = TREE_UNSIGNED (domain);
@@ -5792,7 +5788,6 @@ expand_expr (exp, target, tmode, modifier)
     case BIND_EXPR:
       {
 	tree vars = TREE_OPERAND (exp, 0);
-	int vars_need_expansion = 0;
 
 	/* Need to open a binding contour here because
 	   if there are any cleanups they must be contained here.  */
@@ -5808,7 +5803,6 @@ expand_expr (exp, target, tmode, modifier)
 	  {
 	    if (DECL_RTL (vars) == 0)
 	      {
-		vars_need_expansion = 1;
 		expand_decl (vars);
 	      }
 	    expand_decl_init (vars);
@@ -6401,7 +6395,7 @@ expand_expr (exp, target, tmode, modifier)
 	rtx setaddr = XEXP (setval, 0);
 	enum machine_mode index_mode = TYPE_MODE (TREE_TYPE (index));
 	rtx rlow;
-	rtx diff, quo, rem, addr, bit, result;
+	rtx diff, rem, addr, bit, result;
 
 	preexpand_calls (exp);
 
@@ -6456,8 +6450,8 @@ expand_expr (exp, target, tmode, modifier)
 	diff = expand_binop (index_mode, sub_optab, index_val, rlow,
 			     NULL_RTX, iunsignedp, OPTAB_LIB_WIDEN);
 
-	quo = expand_divmod (0, TRUNC_DIV_EXPR, index_mode, diff,
-			     GEN_INT (BITS_PER_UNIT), NULL_RTX, iunsignedp);
+	expand_divmod (0, TRUNC_DIV_EXPR, index_mode, diff,
+		       GEN_INT (BITS_PER_UNIT), NULL_RTX, iunsignedp);
 	rem = expand_divmod (1, TRUNC_MOD_EXPR, index_mode, index_val,
 			     GEN_INT (BITS_PER_UNIT), NULL_RTX, iunsignedp);
 
