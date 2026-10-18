@@ -3726,20 +3726,10 @@ build_c_cast (type, expr)
 
       if (field)
 	{
-	  char *name;
 	  tree t;
 
 	  if (pedantic)
 	    pedwarn ("ANSI C forbids casts to union type");
-	  if (TYPE_NAME (type) != 0)
-	    {
-	      if (TREE_CODE (TYPE_NAME (type)) == IDENTIFIER_NODE)
-		name = IDENTIFIER_POINTER (TYPE_NAME (type));
-	      else
-		name = IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (type)));
-	    }
-	  else
-	    name = "";
 	  t = digest_init (type, build (CONSTRUCTOR, type, NULL_TREE,
 					build_tree_list (field, value)),
 			   0, 0);
@@ -4116,8 +4106,8 @@ convert_for_assignment (type, rhs, errtype, fundecl, funname, parmnum)
 		  /* If this type won't generate any warnings, use it.  */
 		  if ((TREE_CODE (ttr) == FUNCTION_TYPE
 		       && TREE_CODE (ttl) == FUNCTION_TYPE)
-		      ? ((! TYPE_READONLY (ttl) | TYPE_READONLY (ttr))
-			 & (! TYPE_VOLATILE (ttl) | TYPE_VOLATILE (ttr)))
+		      ? (((! TYPE_READONLY (ttl)) | TYPE_READONLY (ttr))
+			 & ((! TYPE_VOLATILE (ttl)) | TYPE_VOLATILE (ttr)))
 		      : ((TYPE_READONLY (ttl) | ! TYPE_READONLY (ttr))
 			 & (TYPE_VOLATILE (ttl) | ! TYPE_VOLATILE (ttr))))
 		    break;
