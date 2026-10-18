@@ -795,7 +795,7 @@ int
 find_all_handler_type_matches (array)
   void ***array;
 {
-  struct handler_info *handler, *last;
+  struct handler_info *handler;
   int x,y;
   void *val;
   void **ptr;
@@ -815,9 +815,8 @@ find_all_handler_type_matches (array)
 
   for (x = 0 ; x < current_func_eh_entry; x++)
     {
-      last = NULL;
       handler = function_eh_regions[x].handlers;
-      for ( ; handler; last = handler, handler = handler->next)
+      for ( ; handler; handler = handler->next)
         {
           val = handler->type_info;
           if (val != NULL && val != CATCH_ALL_TYPE)
@@ -1247,6 +1246,7 @@ start_dynamic_handler ()
     x = expand_builtin_setjmp (buf, NULL_RTX, noex,
 			       ehstack.top->entry->exception_handler_label);
     emit_label (noex);
+    (void) x;
   }
 #endif
 
@@ -1936,7 +1936,7 @@ output_exception_table_entry (file, n)
             assemble_integer (const0_rtx, POINTER_SIZE / BITS_PER_UNIT, 1);
           else
             if (handler->type_info == CATCH_ALL_TYPE)
-              assemble_integer (GEN_INT (CATCH_ALL_TYPE), 
+              assemble_integer (GEN_INT (-1), 
                                              POINTER_SIZE / BITS_PER_UNIT, 1);
             else
               output_constant ((tree)(handler->type_info), 
@@ -1983,7 +1983,7 @@ output_exception_table ()
 
   if (flag_new_exceptions)
     {
-      assemble_integer (GEN_INT (NEW_EH_RUNTIME), 
+      assemble_integer (GEN_INT (-2), 
                                         POINTER_SIZE / BITS_PER_UNIT, 1);
       assemble_integer (GEN_INT (language_code), 2 , 1); 
       assemble_integer (GEN_INT (version_code), 2 , 1);
