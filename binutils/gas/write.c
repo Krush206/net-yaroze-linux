@@ -422,6 +422,12 @@ chain_frchains_together_1 (section, frchp)
 	}
 #endif
     }
+
+  /* If no frchain matched, there is nothing to chain (and DUMMY must
+     not be handed back to the caller as a dangling pointer).  */
+  if (prev_frag == &dummy)
+    return (fragS *) NULL;
+
   assert (prev_frag->fr_type != 0);
   prev_frag->fr_next = 0;
   return prev_frag;
@@ -988,7 +994,6 @@ write_relocs (abfd, sec, xxx)
   for (fixp = seginfo->fix_root; fixp != (fixS *) NULL; fixp = fixp->fx_next)
     {
       arelent **reloc;
-      char *data;
       bfd_reloc_status_type s;
       symbolS *sym;
       int j;
@@ -1015,7 +1020,6 @@ write_relocs (abfd, sec, xxx)
           relocs[i++] = reloc[j];
           assert(i <= n);
 	}
-      data = fixp->fx_frag->fr_literal + fixp->fx_where;
       if (fixp->fx_where + fixp->fx_size
 	  > fixp->fx_frag->fr_fix + fixp->fx_frag->fr_offset)
 	as_bad_where (fixp->fx_file, fixp->fx_line,
@@ -2420,7 +2424,6 @@ fixup_segment (fixP, this_segment_type)
   symbolS *sub_symbolP;
   valueT add_number;
   int size;
-  char *place;
   long where;
   int pcrel, plt;
   fragS *fragP;
@@ -2453,7 +2456,6 @@ fixup_segment (fixP, this_segment_type)
       fragP = fixP->fx_frag;
       know (fragP);
       where = fixP->fx_where;
-      place = fragP->fr_literal + where;
       size = fixP->fx_size;
       add_symbolP = fixP->fx_addsy;
 #ifdef TC_VALIDATE_FIX
