@@ -517,7 +517,9 @@ extern const bfd_target bfd_elf32_bigmips_vec;
 extern const bfd_target bfd_elf64_bigmips_vec;
 extern const bfd_target bfd_elf32_d10v_vec;
 extern const bfd_target bfd_elf32_d30v_vec;
-extern const bfd_target bfd_elf32_hppa_vec;
+/* HPPA backend disabled: elf32-hppa.c does not compile with modern
+   host GCC, and this mipsel-ecoff toolchain never selects HPPA.
+   extern const bfd_target bfd_elf32_hppa_vec; */
 extern const bfd_target bfd_elf32_i386_vec;
 extern const bfd_target bfd_elf32_i860_vec;
 extern const bfd_target bfd_elf32_i960_vec;
@@ -694,7 +696,7 @@ const bfd_target * const bfd_target_vector[] = {
 #endif
 	&bfd_elf32_d10v_vec,
 	&bfd_elf32_d30v_vec,
-	&bfd_elf32_hppa_vec,
+	/* HPPA backend disabled (see extern above).  &bfd_elf32_hppa_vec, */
 	&bfd_elf32_i386_vec,
 	&bfd_elf32_i860_vec,
 	&bfd_elf32_i960_vec,
