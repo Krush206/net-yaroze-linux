@@ -24,6 +24,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include <stdio.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/mman.h>
 
 #ifndef SEEK_SET
@@ -190,7 +191,7 @@ mmalloc_findbase (size)
 	 to signal an error return, and besides, it is useful to
 	 catch NULL pointers if it is unmapped.  Instead start
 	 at the next page boundary. */
-      base = (caddr_t) getpagesize ();
+      base = (caddr_t) (unsigned long) getpagesize ();
     }
   else if (base == (caddr_t) -1)
     {
