@@ -129,7 +129,7 @@ stupid_life_analysis (f, nregs, file)
 {
   register int i;
   register rtx last, insn;
-  int max_uid, max_suid;
+  int max_suid;
 
   current_function_has_computed_jump = 0;
 
@@ -144,7 +144,6 @@ stupid_life_analysis (f, nregs, file)
     if (INSN_UID (insn) > i)
       i = INSN_UID (insn);
 
-  max_uid = i + 1;
   uid_suid = (int *) alloca ((i + 1) * sizeof (int));
 
   /* Compute the mapping from uids to suids.
