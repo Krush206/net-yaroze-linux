@@ -1401,11 +1401,9 @@ size_of_uleb128 (value)
      register unsigned long value;
 {
   register unsigned long size = 0;
-  register unsigned byte;
 
   do
     {
-      byte = (value & 0x7f);
       value >>= 7;
       size += 1;
     }
