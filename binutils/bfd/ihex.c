@@ -249,7 +249,7 @@ ihex_bad_byte (abfd, lineno, c, error)
       char buf[10];
 
       if (! isprint (c))
-	sprintf (buf, "\\%03o", (unsigned int) c);
+	sprintf (buf, "\\%03o", (unsigned int) (c & 0xff));
       else
 	{
 	  buf[0] = c;
@@ -584,7 +584,6 @@ ihex_read_section (abfd, section, contents)
     {
       char hdr[8];
       unsigned int len;
-      bfd_vma addr;
       unsigned int type;
       unsigned int i;
 
@@ -599,7 +598,6 @@ ihex_read_section (abfd, section, contents)
 	goto error_return;
 
       len = HEX2 (hdr);
-      addr = HEX4 (hdr + 2);
       type = HEX2 (hdr + 6);
 
       /* We should only see type 0 records here.  */
