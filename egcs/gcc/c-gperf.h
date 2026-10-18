@@ -40,13 +40,13 @@ hash (str, len)
     {
       default:
       case 3:
-        hval += asso_values[str[2]];
+        hval += asso_values[(unsigned char) str[2]];
       case 2:
       case 1:
-        hval += asso_values[str[0]];
+        hval += asso_values[(unsigned char) str[0]];
         break;
     }
-  return hval + asso_values[str[len - 1]];
+  return hval + asso_values[(unsigned char) str[len - 1]];
 }
 
 static struct resword wordlist[] =
@@ -165,7 +165,7 @@ static struct resword wordlist[] =
 #ifdef __GNUC__
 inline
 #endif
-struct resword *
+static struct resword *
 is_reserved_word (str, len)
      register char *str;
      register unsigned int len;
