@@ -2842,7 +2842,7 @@ subst_constants (loc, insn, map)
   register char *format_ptr;
   int num_changes = num_validated_changes ();
   rtx new = 0;
-  enum machine_mode op0_mode;
+  enum machine_mode op0_mode = VOIDmode;
 
   code = GET_CODE (x);
 
