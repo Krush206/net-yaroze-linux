@@ -1942,22 +1942,12 @@ case 60:
     break;}
 case 61:
 #line 478 "c-parse.y"
-{ char *name;
-		  tree result = pop_init_level (0);
+{ tree result = pop_init_level (0);
 		  tree type = yyvsp[-5].ttype;
 		  finish_init ();
 
 		  if (pedantic)
 		    pedwarn ("ANSI C forbids constructor expressions");
-		  if (TYPE_NAME (type) != 0)
-		    {
-		      if (TREE_CODE (TYPE_NAME (type)) == IDENTIFIER_NODE)
-			name = IDENTIFIER_POINTER (TYPE_NAME (type));
-		      else
-			name = IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (type)));
-		    }
-		  else
-		    name = "";
 		  yyval.ttype = result;
 		  if (TREE_CODE (type) == ARRAY_TYPE && TYPE_SIZE (type) == 0)
 		    {
