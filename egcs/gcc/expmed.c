@@ -2451,7 +2451,8 @@ choose_multiplier (d, n, precision, multiplier_ptr, post_shift_ptr, lgup_ptr)
       nl = (unsigned HOST_WIDE_INT) 1 << pow;
     }
   div_and_round_double (TRUNC_DIV_EXPR, 1, nl, nh, d, (HOST_WIDE_INT) 0,
-			&mlow_lo, &mlow_hi, &dummy1, &dummy2);
+			(HOST_WIDE_INT *) &mlow_lo, (HOST_WIDE_INT *) &mlow_hi,
+			(HOST_WIDE_INT *) &dummy1, (HOST_WIDE_INT *) &dummy2);
 
   /* mhigh = (2^(N + lgup) + 2^N + lgup - precision)/d */
   if (pow2 >= HOST_BITS_PER_WIDE_INT)
@@ -2459,7 +2460,8 @@ choose_multiplier (d, n, precision, multiplier_ptr, post_shift_ptr, lgup_ptr)
   else
     nl |= (unsigned HOST_WIDE_INT) 1 << pow2;
   div_and_round_double (TRUNC_DIV_EXPR, 1, nl, nh, d, (HOST_WIDE_INT) 0,
-			&mhigh_lo, &mhigh_hi, &dummy1, &dummy2);
+			(HOST_WIDE_INT *) &mhigh_lo, (HOST_WIDE_INT *) &mhigh_hi,
+			(HOST_WIDE_INT *) &dummy1, (HOST_WIDE_INT *) &dummy2);
 
   if (mhigh_hi && nh - d >= d)
     abort ();
