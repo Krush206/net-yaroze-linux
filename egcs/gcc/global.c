@@ -1335,15 +1335,8 @@ mark_reg_store (orig_reg, setter)
   register int regno;
   register rtx reg = orig_reg;
 
-  /* WORD is which word of a multi-register group is being stored.
-     For the case where the store is actually into a SUBREG of REG.
-     Except we don't use it; I believe the entire REG needs to be
-     made live.  */
-  int word = 0;
-
   if (GET_CODE (reg) == SUBREG)
     {
-      word = SUBREG_WORD (reg);
       reg = SUBREG_REG (reg);
     }
 
@@ -1398,18 +1391,11 @@ mark_reg_clobber (reg, setter)
 {
   register int regno;
 
-  /* WORD is which word of a multi-register group is being stored.
-     For the case where the store is actually into a SUBREG of REG.
-     Except we don't use it; I believe the entire REG needs to be
-     made live.  */
-  int word = 0;
-
   if (GET_CODE (setter) != CLOBBER)
     return;
 
   if (GET_CODE (reg) == SUBREG)
     {
-      word = SUBREG_WORD (reg);
       reg = SUBREG_REG (reg);
     }
 
