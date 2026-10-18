@@ -1762,15 +1762,16 @@ add_ecoff_symbol (str, type, storage, sym_value, addend, value, indx)
 	     Also, tie the external pointer back to the function begin symbol.  */
 	  if (begin_type != st_File && begin_type != st_Block)
 	    {
-	      symint_t ty;
 	      varray_t *svp = &cur_file_ptr->aux_syms;
 
 	      pscope->lsym->ecoff_sym.asym.index = add_aux_sym_symint (0);
 	      pscope->lsym->index_ptr =
 		&svp->last->datum->aux[svp->objects_last_page - 1];
-	      ty = add_aux_sym_tir (&last_func_type_info,
-				    hash_no,
-				    &cur_file_ptr->thash_head[0]);
+	      /* The returned type index is not otherwise used (see the
+		 commented-out mips-tfile code below).  */
+	      (void) add_aux_sym_tir (&last_func_type_info,
+				      hash_no,
+				      &cur_file_ptr->thash_head[0]);
 
 /* This seems to be unnecessary.  I'm not even sure what it is
  * intended to do.  It's from mips-tfile.
