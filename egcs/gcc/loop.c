@@ -397,7 +397,6 @@ loop_optimize (f, dumpfile, unroll_p)
 {
   register rtx insn;
   register int i;
-  rtx last_insn;
 
   loop_dump_stream = dumpfile;
 
@@ -499,7 +498,6 @@ loop_optimize (f, dumpfile, unroll_p)
 
   for (insn = f, i = 0; insn; insn = NEXT_INSN (insn))
     {
-      last_insn = insn;
       if (GET_CODE (insn) != NOTE
 	  || NOTE_LINE_NUMBER (insn) <= 0)
 	uid_luid[INSN_UID (insn)] = ++i;
@@ -573,8 +571,6 @@ scan_loop (loop_start, end, nregs, unroll_p)
   /* For a rotated loop that is entered near the bottom,
      this is the label at the top.  Otherwise it is zero.  */
   rtx loop_top = 0;
-  /* Jump insn that enters the loop, or 0 if control drops in.  */
-  rtx loop_entry_jump = 0;
   /* Place in the loop where control enters.  */
   rtx scan_start;
   /* Number of insns in the loop.  */
@@ -642,8 +638,6 @@ scan_loop (loop_start, end, nregs, unroll_p)
      back to so we can scan that after the end of the loop.  */
   if (GET_CODE (p) == JUMP_INSN)
     {
-      loop_entry_jump = p;
-
       /* Loop entry must be unconditional jump (and not a RETURN)  */
       if (simplejump_p (p)
 	  && JUMP_LABEL (p) != 0
@@ -1748,7 +1742,7 @@ move_movables (movables, threshold, insn_count, loop_start, end, nregs)
 	    {
 	      int count;
 	      register struct movable *m1;
-	      rtx first;
+	      rtx first = 0;
 
 	      /* Now move the insns that set the reg.  */
 
@@ -4393,17 +4387,6 @@ strength_reduce (scan_start, end, loop_top, insn_count,
 	     proper final value for such a biv here anyways.  */
 	  if (final_value != 0 && ! bl->reversed)
 	    {
-	      rtx insert_before;
-
-	      /* If the loop has multiple exits, emit the insn before the
-		 loop to ensure that it will always be executed no matter
-		 how the loop exits.  Otherwise, emit the insn after the
-		 loop, since this is slightly more efficient.  */
-	      if (loop_number_exit_count[uid_loop_num[INSN_UID (loop_start)]])
-		insert_before = loop_start;
-	      else
-		insert_before = end_insert_before;
-
 	      emit_insn_before (gen_move_insn (bl->biv->dest_reg, final_value),
 				end_insert_before);
 	    }
@@ -4915,10 +4898,7 @@ check_final_value (v, loop_start, loop_end)
      struct induction *v;
      rtx loop_start, loop_end;
 {
-  struct iv_class *bl;
   rtx final_value = 0;
-
-  bl = reg_biv_class[REGNO (v->src_reg)];
 
   /* DEST_ADDR givs will never reach here, because they are always marked
      replaceable above in record_giv.  */
