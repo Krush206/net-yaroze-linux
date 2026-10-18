@@ -1336,7 +1336,7 @@ try_combine (i3, i2, i1)
   /* Nonzero is I2's body now appears in I3.  */
   int i2_is_used;
   /* INSN_CODEs for new I3, new I2, and user of condition code.  */
-  int insn_code_number, i2_code_number, other_code_number;
+  int insn_code_number, i2_code_number = 0, other_code_number = 0;
   /* Contains I3 if the destination of I3 is used in its source, which means
      that the old life of I3 is being killed.  If that usage is placed into
      I2 and not in I3, a REG_DEAD note must be made.  */
@@ -9285,7 +9285,7 @@ gen_rtx_combine VPROTO((enum rtx_code code, enum machine_mode mode, ...))
 #endif
   va_list p;
   int n_args;
-  rtx args[3];
+  rtx args[3] = { 0, 0, 0 };
   int j;
   char *fmt;
   rtx rt;
