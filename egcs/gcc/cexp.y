@@ -485,7 +485,7 @@ parse_number (olen)
       while (1) {
 	if (c == 'l' || c == 'L')
 	  {
-	    if (!pedantic < spec_long)
+	    if ((!pedantic) < spec_long)
 	      yyerror ("too many `l's in integer constant");
 	    spec_long++;
 	  }
