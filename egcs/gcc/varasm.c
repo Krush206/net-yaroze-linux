@@ -1154,7 +1154,7 @@ assemble_variable (decl, top_level, at_end, dont_output_data)
 {
   register char *name;
   unsigned int align;
-  tree size_tree;
+  tree size_tree = NULL_TREE;
   int reloc = 0;
   enum in_section saved_in_section;
 
@@ -1686,7 +1686,7 @@ rtx
 assemble_static_space (size)
      int size;
 {
-  char name[12];
+  char name[32];
   char *namestring;
   rtx x;
 
@@ -1717,6 +1717,7 @@ assemble_static_space (size)
     int rounded = ((size + (BIGGEST_ALIGNMENT / BITS_PER_UNIT) - 1)
 		   / (BIGGEST_ALIGNMENT / BITS_PER_UNIT)
 		   * (BIGGEST_ALIGNMENT / BITS_PER_UNIT));
+    (void) rounded;
     ASM_OUTPUT_LOCAL (asm_out_file, name, size, rounded);
   }
 #endif
@@ -2320,6 +2321,7 @@ const_hash (exp)
 	struct addr_const value;
 
 	decode_addr_const (exp, &value);
+	hi = value.offset;
 	if (GET_CODE (value.base) == SYMBOL_REF)
 	  {
 	    /* Don't hash the address of the SYMBOL_REF;
@@ -3353,8 +3355,8 @@ record_constant_rtx (mode, x)
      enum machine_mode mode;
      rtx x;
 {
-  struct constant_descriptor *ptr;
-  char *label;
+  struct constant_descriptor *ptr = 0;
+  char *label = 0;
   struct rtx_const value;
 
   decode_rtx_const (mode, x, &value);
@@ -4346,6 +4348,7 @@ assemble_alias (decl, target)
   ASM_OUTPUT_WEAK_ALIAS (asm_out_file, name, IDENTIFIER_POINTER (target));
   TREE_ASM_WRITTEN (decl) = 1;
 #else
+  (void) name;
   warning ("alias definitions not supported in this configuration; ignored");
 #endif
 #endif
