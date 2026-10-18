@@ -32,10 +32,7 @@ Boston, MA 02111-1307, USA.  */
 #include <sys/types.h>
 #include <string.h>
 #include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 
 #include <demangle.h>
 #undef CURRENT_DEMANGLING_STYLE
@@ -1415,7 +1412,6 @@ demangle_template (work, mangled, tname, trawname, is_type, remember)
   int r;
   int need_comma = 0;
   int success = 0;
-  const char *start;
   string temp;
   int bindex;
 
@@ -1424,7 +1420,6 @@ demangle_template (work, mangled, tname, trawname, is_type, remember)
     {
       if (remember)
 	bindex = register_Btype (work);
-      start = *mangled;
       /* get template name */
       if (**mangled == 'z')
 	{
@@ -3879,9 +3874,6 @@ fatal (str)
   fprintf (stderr, "%s: %s\n", program_name, str);
   exit (1);
 }
-
-char * malloc ();
-char * realloc ();
 
 char *
 xmalloc (size)
