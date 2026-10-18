@@ -26,5 +26,13 @@ Boston, MA 02111-1307, USA.  */
 #include "gofast.h"
 #include "mips/ecoff.h"
 
+/* Named section support, needed by the Linux kernel (its `__init'
+   sections, exception tables, ...).  ECOFF cannot express the ELF
+   section flags, so we just emit the section name.  Section names used
+   with this target must be at most 8 characters long, an ECOFF
+   limitation.  */
+#define ASM_OUTPUT_SECTION_NAME(F, DECL, NAME, RELOC) \
+  fprintf (F, "\t.section\t%s\n", NAME)
+
 #undef CPP_PREDEFINES
 #define CPP_PREDEFINES "-Dmips -DMIPSEL -DR3000 -D_mips -D_MIPSEL -D_R3000"
