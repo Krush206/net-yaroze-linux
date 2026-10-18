@@ -4149,7 +4149,7 @@ special_symbol (hp, op)
       if (instack[i].fname != NULL)
         true_indepth++;
 
-    buf = (char *) alloca (8);	/* Eight bytes ought to be more than enough */
+    buf = (char *) alloca (12);	/* Enough for a 32-bit value.  */
     sprintf (buf, "%d", true_indepth - 1);
     break;
 
