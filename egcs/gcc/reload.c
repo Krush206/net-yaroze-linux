@@ -2346,7 +2346,7 @@ find_reloads (insn, replace, ind_levels, live_known, reload_reg_p)
   enum machine_mode operand_mode[MAX_RECOG_OPERANDS];
   /* Cache the last regno for the last pseudo we did an output reload
      for in case the next insn uses it.  */
-  static int last_output_reload_regno = -1;
+  static int last_output_reload_regno ATTRIBUTE_UNUSED = -1;
 
   this_insn = insn;
   this_insn_is_asm = 0;		/* Tentative.  */
@@ -5292,7 +5292,6 @@ find_reloads_address_1 (mode, x, context, loc, opnum, type, ind_levels, insn)
 	     of an equivalent address for a pseudo that was not allocated to a
 	     hard register.  Verify that the specified address is valid and
 	     reload it into a register.  */
-	  rtx tem = XEXP (x, 0);
 	  register rtx link;
 	  int reloadnum;
 
