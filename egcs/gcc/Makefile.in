@@ -530,7 +530,7 @@ INTERNAL_CFLAGS = $(CROSS) -DIN_GCC @extra_c_flags@
 
 # This is the variable actually used when we compile.
 ALL_CFLAGS = $(INTERNAL_CFLAGS) $(X_CFLAGS) $(T_CFLAGS) $(CFLAGS) $(XCFLAGS) \
-	@DEFS@ $(SCHED_CFLAGS)
+	@DEFS@ $(SCHED_CFLAGS) -fno-strict-aliasing
 
 # Likewise.
 ALL_CPPFLAGS = $(CPPFLAGS) $(X_CPPFLAGS) $(T_CPPFLAGS)
@@ -1571,7 +1571,7 @@ s-codes : $(md_file) gencodes $(srcdir)/move-if-change
 
 insn-emit.o : insn-emit.c $(CONFIG_H) $(RTL_H) $(EXPR_H) real.h output.h \
   insn-config.h insn-flags.h insn-codes.h system.h reload.h
-	$(CC) $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) -c insn-emit.c
+	$(CC) $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) -Wno-unused-but-set-variable -Wno-maybe-uninitialized -c insn-emit.c
 
 insn-emit.c: s-emit ; @true
 s-emit : $(md_file) genemit $(srcdir)/move-if-change
@@ -1581,7 +1581,7 @@ s-emit : $(md_file) genemit $(srcdir)/move-if-change
 
 insn-recog.o : insn-recog.c $(CONFIG_H) $(RTL_H) insn-config.h $(RECOG_H) \
   real.h output.h flags.h system.h
-	$(CC) $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) -c insn-recog.c
+	$(CC) $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) -Wno-unused-label -c insn-recog.c
 
 insn-recog.c: s-recog ; @true
 s-recog : $(md_file) genrecog $(srcdir)/move-if-change
