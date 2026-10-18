@@ -2912,7 +2912,7 @@ process_command (argc, argv)
 		      else
 			{
 			  char *string = xmalloc (len + 1);
-			  strncpy (string, value, len-7);
+			  memcpy (string, value, len-7);
 			  strcpy (string+len-7, "include");
 			  add_prefix (&include_prefixes, string, NULL_PTR,
 				      1, 0, NULL_PTR);
