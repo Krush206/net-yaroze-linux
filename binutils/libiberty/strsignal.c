@@ -20,6 +20,9 @@
 
 #include <stdio.h>
 #include <signal.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 /*  Routines imported from standard C runtime libraries. */
 
