@@ -1186,7 +1186,8 @@ etartdouble (r, l)
      REAL_VALUE_TYPE r;
      long l[];
 {
-  unsigned EMUSHORT e[NE];
+  /* ENDIAN reads 8 halfwords for TFmode, two more than NE can hold.  */
+  unsigned EMUSHORT e[NE + 2];
 
   GET_REAL (&r, e);
   etoe113 (e, e);
@@ -3275,11 +3276,12 @@ e113toe (pe, y)
 {
   register unsigned EMUSHORT r;
   unsigned EMUSHORT *e, *p;
-  unsigned EMUSHORT yy[NI];
-  int denorm, i;
+  /* The IEEE packing below stores 7 halfwords starting at yy[M + 1],
+     which needs one more word than NI when NE is only 6.  */
+  unsigned EMUSHORT yy[NI + 1];
+  int i;
 
   e = pe;
-  denorm = 0;
   ecleaz (yy);
 #ifdef IEEE
   if (! REAL_WORDS_BIG_ENDIAN)
