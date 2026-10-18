@@ -23,28 +23,27 @@ srcdir=.
 
 SHELL = /bin/sh
 
-CC=gcc
-CFLAGS=-g -O2
+CC=i686-linux-gnu-gcc
+CFLAGS=-g -O2 -Wall -Wno-error=implicit-int -Wno-error=implicit-function-declaration
 AR=ar
 RANLIB=ranlib
 
 # Host and target-dependent makefile fragments come in here.
 
-# Host: Sun 4 or Sparcstation, running SunOS 4
-XDEPFILES= ser-tcp.o
-XM_FILE= xm-sun4os4.h
-NAT_FILE= nm-sun4os4.h
-NATDEPFILES= fork-child.o infptrace.o inftarg.o corelow.o sparc-nat.o
-HOST_IPC=-DBSD_IPC
-GDBSERVER_DEPFILES= low-sparc.o
-# Setting XM_CLIBS=-lresolv would let us use the DNS, but that would screw
-# anyone who wants to use NIS, which includes at least one Cygnus customer
-# (PR 3593).  So leave it this way until/unless we find a resolver which can
-# get names from either DNS or NIS from the same GDB binary.
+# Host: Intel 386 running GNU/Linux
 
-# Target: Sun 4 or Sparcstation, running SunOS 4
-TDEPFILES= sparc-tdep.o solib.o
-TM_FILE= tm-sun4os4.h
+XM_FILE= xm-linux.h
+XDEPFILES= ser-tcp.o
+
+NAT_FILE= nm-linux.h
+NATDEPFILES= infptrace.o solib.o inftarg.o fork-child.o corelow.o \
+	core-aout.o core-regset.o i386v-nat.o i386-linux-nat.o linux-thread.o
+
+# Target: Big-endian mips board, typically an IDT.
+TDEPFILES= mips-tdep.o remote-mips.o remote-array.o
+TM_FILE= tm-embedl.h
+SIM_OBS = remote-sim.o
+SIM = ../sim/mips/libsim.a
 # End of host and target-dependent makefile fragments
 
 # Where is our "include" directory?  Typically $(srcdir)/../include.
@@ -73,20 +72,20 @@ INTL_SRC = $(srcdir)/$(INTL_DIR)
 INTL_CFLAGS = -I$(INTL_DIR) -I$(INTL_SRC)
 
 # Where is the TCL library?  Typically in ../tcl.
-TCL_CFLAGS = @TCLHDIR@
+TCL_CFLAGS = 
 
 # Where is the TK library?  Typically in ../tk.
-TK_CFLAGS = @TKHDIR@ @TK_BUILD_INCLUDES@
+TK_CFLAGS =  
 
 # Where is Itcl?  Typically in ../itcl.
-ITCL_CFLAGS = @ITCLHDIR@
+ITCL_CFLAGS = 
 
 # Where is Tix?  Typically in ../tix.
-TIX_CFLAGS = @TIXHDIR@
+TIX_CFLAGS = 
 
-X11_CFLAGS = @TK_XINCLUDES@
+X11_CFLAGS = 
 
-ENABLE_IDE= @ENABLE_IDE@
+ENABLE_IDE= 
 
 GUI_CFLAGS_X = -I$(srcdir)/../../libgui/src
 
