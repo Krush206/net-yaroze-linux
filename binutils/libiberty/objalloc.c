@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 
 /* Get a definition for NULL.  */
 #include <stdio.h>
+/* Get a definition for abort.  */
+#include <stdlib.h>
 
 #if VMS
 #include <stdlib.h>
