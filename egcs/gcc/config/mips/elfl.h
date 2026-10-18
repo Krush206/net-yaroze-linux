@@ -21,6 +21,10 @@ Boston, MA 02111-1307, USA.  */
 
 /* This is a little endian version of elf.h.  */
 
+/* GAS is the assembler for this configuration (there is no mips-tfile);
+   this mirrors what the original runix/sgi mipsel-linux toolchain did.  */
+#define TARGET_DEFAULT MASK_GAS
+
 #define TARGET_ENDIAN_DEFAULT 0
 
 #include "mips/elf.h"
